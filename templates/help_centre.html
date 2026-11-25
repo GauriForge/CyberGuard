@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Help Centre - CyberGuard{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+    <div>
+        <p class="page-label">SUPPORT / HELP CENTRE</p>
+        <h1>Cybercrime Reporting Centre</h1>
+        <p class="page-subtitle">
+            Official reporting websites and helpline numbers for cybercrime,
+            online fraud, suspicious communications, and related emergencies.
+        </p>
+    </div>
+</div>
+
+<div class="assessment-info-card">
+    <div class="assessment-info-icon">
+        <i class="bi bi-info-circle"></i>
+    </div>
+    <div>
+        <h3>Need to Report a Cybercrime?</h3>
+        <p>
+            For online financial fraud, call <strong>1930</strong> immediately.
+            For a crime involving an immediate threat to personal safety, call
+            <strong>112</strong>. Use the official reporting portal to submit
+            a cybercrime complaint.
+        </p>
+        <div class="profile-actions">
+            <a href="https://cybercrime.gov.in/"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="profile-save-btn text-decoration-none">
+                <i class="bi bi-shield-check"></i>
+                Open Cybercrime Portal
+            </a>
+
+            <a href="tel:1930"
+               class="profile-secondary-btn text-decoration-none">
+                <i class="bi bi-telephone"></i>
+                Call 1930
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="overview-section-header">
+    <p class="page-label">OFFICIAL RESOURCES</p>
+    <h2>Reporting Websites and Helplines</h2>
+    <p>
+        Choose the resource that matches your situation. These services have
+        different purposes; read each description before proceeding.
+    </p>
+</div>
+
+<div class="assessment-grid">
+    {% for resource in resources %}
+    <div class="assessment-card">
+        <div class="assessment-card-top">
+            <div class="assessment-icon">
+                <i class="bi {{ resource.icon }}"></i>
+            </div>
+            <span class="assessment-level beginner">
+                Official Resource
+            </span>
+        </div>
+
+        <div class="assessment-card-content">
+            <p class="page-label">{{ resource.category }}</p>
+            <h3>{{ resource.title }}</h3>
+            <p>{{ resource.description }}</p>
+
+            {% if resource.number %}
+            <div class="assessment-meta">
+                <span>
+                    <i class="bi bi-telephone-fill"></i>
+                    Helpline
+                </span>
+                <strong>
+                    <a href="tel:{{ resource.number }}"
+                       class="text-decoration-none">
+                        {{ resource.number }}
+                    </a>
+                </strong>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="assessment-card-footer">
+            <span class="assessment-status">
+                <i class="bi bi-patch-check"></i>
+                Government Service
+            </span>
+
+            <a href="{{ resource.url }}"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="assessment-button">
+                {{ resource.button }}
+                <i class="bi bi-box-arrow-up-right"></i>
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="assessment-info-card">
+    <div class="assessment-info-icon">
+        <i class="bi bi-globe2"></i>
+    </div>
+    <div>
+        <h3>Official Websites Only</h3>
+        <p>
+            Always verify that you are using the official website before
+            submitting personal details or evidence. For a cybercrime complaint,
+            retain the acknowledgement or reference number provided after submission.
+        </p>
+    </div>
+</div>
+
+{% endblock %}

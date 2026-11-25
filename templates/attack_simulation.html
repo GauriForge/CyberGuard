@@ -1,0 +1,338 @@
+
+{% extends "base.html" %}
+
+{% block title %}{{ simulation.get('title', 'Attack Simulation') }} - CyberGuard{% endblock %}
+
+{% block content %}
+
+<div class="learning-page">
+
+    <!-- Page Header -->
+    <div class="learning-header">
+        <div>
+            <div class="breadcrumb-text">
+                <a href="{{ url_for('attacks.attack_categories') }}">
+                    Learning
+                </a>
+                <i class="bi bi-chevron-right"></i>
+                <span>Attack Simulation</span>
+            </div>
+
+            <p class="page-label">CYBERSECURITY PRACTICE</p>
+
+            <h1>
+                {{ simulation.get('title', 'Attack Simulation') }}
+            </h1>
+
+            <p>
+                {{ simulation.get(
+                    'description',
+                    'Practise identifying cyber threats, evaluating risks, and selecting appropriate defensive actions.'
+                ) }}
+            </p>
+        </div>
+
+        <span class="difficulty">
+            {{ simulation.get('difficulty', 'Beginner') }}
+        </span>
+    </div>
+
+    <!-- Simulation Information -->
+    <div class="overview-info-grid">
+
+        <div class="overview-info-card">
+            <i class="bi bi-shield-exclamation"></i>
+            <div>
+                <span>Scenario Type</span>
+                <strong>
+                    {{ simulation.get('attack_type', 'Security Incident') }}
+                </strong>
+            </div>
+        </div>
+
+        <div class="overview-info-card">
+            <i class="bi bi-list-check"></i>
+            <div>
+                <span>Total Steps</span>
+                <strong>
+                    {{ simulation.get('steps', [])|length }}
+                </strong>
+            </div>
+        </div>
+
+        <div class="overview-info-card">
+            <i class="bi bi-mortarboard"></i>
+            <div>
+                <span>Learning Mode</span>
+                <strong>Interactive Practice</strong>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Safety Notice -->
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon green">
+                <i class="bi bi-shield-check"></i>
+            </div>
+
+            <div>
+                <h2>Safe Simulation Environment</h2>
+                <p>Practise decision-making without affecting real systems.</p>
+            </div>
+        </div>
+
+        <p>
+            This is a learning exercise. All events and choices should be
+            handled within the simulated environment. Do not use real
+            credentials, target live systems, or perform unauthorized actions.
+        </p>
+    </div>
+
+    <!-- Scenario Introduction -->
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon blue">
+                <i class="bi bi-info-circle"></i>
+            </div>
+
+            <div>
+                <h2>Scenario Briefing</h2>
+                <p>Review the situation before making a decision.</p>
+            </div>
+        </div>
+
+        <p>
+            {{ simulation.get(
+                'scenario',
+                'A potential security event has been reported. Review the available information and decide on the safest response.'
+            ) }}
+        </p>
+
+        {% if simulation.get('objectives') %}
+        <h3>Learning Objectives</h3>
+
+        <ul class="protection-list">
+            {% for objective in simulation.get('objectives', []) %}
+            <li>
+                <i class="bi bi-check-circle"></i>
+                {{ objective }}
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+
+    <!-- Simulation Steps -->
+    {% set simulation_steps = simulation.get('steps', []) %}
+
+    {% if simulation_steps %}
+    <div class="overview-section-header">
+        <p class="page-label">SIMULATION WORKSPACE</p>
+        <h2>Respond to the Scenario</h2>
+        <p>
+            Read each situation and select the action you believe is most
+            appropriate.
+        </p>
+    </div>
+
+    {% for step in simulation_steps %}
+    <div class="learning-content-card">
+
+        <div class="learning-section-heading">
+            <div class="section-icon purple">
+                <i class="bi bi-diagram-3"></i>
+            </div>
+
+            <div>
+                <h2>
+                    Step {{ loop.index }}:
+                    {{ step.get('title', 'Security Decision') }}
+                </h2>
+                <p>Evaluate the situation and choose a response.</p>
+            </div>
+        </div>
+
+        <p>
+            {{ step.get(
+                'description',
+                'Review the available information before selecting an action.'
+            ) }}
+        </p>
+
+        {% if step.get('evidence') %}
+        <div class="overview-card">
+            <div class="overview-icon">
+                <i class="bi bi-file-earmark-text"></i>
+            </div>
+
+            <div class="overview-content">
+                <h3>Available Evidence</h3>
+                <p>{{ step.get('evidence') }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if step.get('options') %}
+        <form method="POST"
+              action="{{ url_for(
+                  'attacks.attack_simulation',
+                  simulation_id=simulation.get('id')
+              ) }}">
+
+            <input type="hidden" name="step_index" value="{{ loop.index0 }}">
+
+            <fieldset class="mb-3">
+                <legend class="h6 mb-3">
+                    What should you do?
+                </legend>
+
+                {% for option in step.get('options', []) %}
+                <div class="form-check mb-3">
+                    <input
+                        class="form-check-input"
+                        type="radio"
+                        name="selected_option"
+                        id="step{{ loop.index }}_option{{ loop.index0 }}"
+                        value="{{ loop.index0 }}"
+                        required
+                    >
+
+                    <label
+                        class="form-check-label"
+                        for="step{{ loop.index }}_option{{ loop.index0 }}"
+                    >
+                        {% if option is mapping %}
+                            {{ option.get('text', option.get('label', 'Option')) }}
+                        {% else %}
+                            {{ option }}
+                        {% endif %}
+                    </label>
+                </div>
+                {% endfor %}
+            </fieldset>
+
+            <button type="submit" class="primary-button">
+                Submit Decision
+                <i class="bi bi-arrow-right"></i>
+            </button>
+
+        </form>
+        {% endif %}
+
+        {% if feedback is defined and feedback and feedback.get('step_index') == loop.index0 %}
+        <div class="overview-card mt-4">
+            <div class="overview-icon">
+                <i class="bi bi-lightbulb"></i>
+            </div>
+
+            <div class="overview-content">
+                <h3>
+                    {{ 'Recommended Response' if feedback.get('is_correct') else 'Review Your Decision' }}
+                </h3>
+
+                <p>{{ feedback.get('message', '') }}</p>
+
+                {% if feedback.get('explanation') %}
+                <p>{{ feedback.get('explanation') }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+    {% endfor %}
+
+    {% else %}
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon orange">
+                <i class="bi bi-info-circle"></i>
+            </div>
+
+            <div>
+                <h2>No Simulation Steps Available</h2>
+                <p>This simulation has not been configured yet.</p>
+            </div>
+        </div>
+
+        <p>
+            Add scenario steps and response options to make this simulation
+            available for practice.
+        </p>
+    </div>
+    {% endif %}
+
+    <!-- Completion and Review -->
+    {% if simulation.get('lessons_learned') %}
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon green">
+                <i class="bi bi-check2-circle"></i>
+            </div>
+
+            <div>
+                <h2>Key Takeaways</h2>
+                <p>Review the security principles covered in this exercise.</p>
+            </div>
+        </div>
+
+        <ul class="protection-list">
+            {% for lesson in simulation.get('lessons_learned', []) %}
+            <li>
+                <i class="bi bi-check-circle"></i>
+                {{ lesson }}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- Continue Learning -->
+    <div class="learning-content-card practical-card">
+        <div class="learning-section-heading">
+            <div class="section-icon purple">
+                <i class="bi bi-mortarboard"></i>
+            </div>
+
+            <div>
+                <h2>Continue Learning</h2>
+                <p>Strengthen your cybersecurity knowledge.</p>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+
+            <a href="{{ url_for('attacks.attack_categories') }}"
+               class="quick-action">
+                <i class="bi bi-shield"></i>
+                <span>Attack Categories</span>
+            </a>
+
+            <a href="{{ url_for('labs.practical_labs') }}"
+               class="quick-action">
+                <i class="bi bi-beaker"></i>
+                <span>Practical Labs</span>
+            </a>
+
+            <a href="{{ url_for('assessments.assessment_list') }}"
+               class="quick-action">
+                <i class="bi bi-clipboard-check"></i>
+                <span>Assessments</span>
+            </a>
+
+        </div>
+    </div>
+
+    <!-- Back Navigation -->
+    <div class="overview-back">
+        <a href="{{ url_for('attacks.attack_categories') }}">
+            <i class="bi bi-arrow-left"></i>
+            Back to Attack Categories
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

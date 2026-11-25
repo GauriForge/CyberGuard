@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block title %}Resources - CyberGuard{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+    <div>
+        <p class="page-label">LEARNING / RESOURCES</p>
+        <h1>Cybersecurity Resources</h1>
+        <p class="page-subtitle">
+            Explore trusted learning materials, security references,
+            and practical resources to strengthen your cybersecurity knowledge.
+        </p>
+    </div>
+</div>
+
+<!-- Resource Summary -->
+<div class="overview-info-grid">
+    <div class="overview-info-card">
+        <i class="bi bi-book"></i>
+        <div>
+            <span>Learning Materials</span>
+            <strong>{{ resources|length }}</strong>
+        </div>
+    </div>
+
+    <div class="overview-info-card">
+        <i class="bi bi-link-45deg"></i>
+        <div>
+            <span>External References</span>
+            <strong>{{ resources|selectattr('url')|list|length }}</strong>
+        </div>
+    </div>
+
+    <div class="overview-info-card">
+        <i class="bi bi-shield-check"></i>
+        <div>
+            <span>Resource Categories</span>
+            <strong>{{ categories|length }}</strong>
+        </div>
+    </div>
+</div>
+
+{% if selected_resource %}
+
+    <!-- Resource Details -->
+    <div class="overview-section-header">
+        <p class="page-label">{{ selected_resource.category }}</p>
+        <h2>{{ selected_resource.title }}</h2>
+        <p>{{ selected_resource.description }}</p>
+    </div>
+
+    <div class="profile-form-card">
+        <p>
+            <strong>Difficulty:</strong>
+            {{ selected_resource.level }}
+        </p>
+
+        <h3>Topics Covered</h3>
+        <ul>
+            {% for topic in selected_resource.topics %}
+                <li>{{ topic }}</li>
+            {% endfor %}
+        </ul>
+
+        <div class="profile-actions">
+            <a
+                href="{{ selected_resource.url }}"
+                class="profile-save-btn"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Open Learning Resource
+                <i class="bi bi-box-arrow-up-right"></i>
+            </a>
+
+            <a
+                href="{{ url_for('resources.learning_resources') }}"
+                class="profile-secondary-btn"
+            >
+                <i class="bi bi-arrow-left"></i>
+                Back to Resources
+            </a>
+        </div>
+    </div>
+
+{% else %}
+
+    <!-- Search and Filter -->
+    <div class="profile-form-card">
+        <form method="GET" action="{{ url_for('resources.learning_resources') }}">
+            <div class="profile-form-grid">
+                <div class="profile-field">
+                    <label for="resourceSearch">Search Resources</label>
+                    <input
+                        type="search"
+                        id="resourceSearch"
+                        name="q"
+                        value="{{ search_query }}"
+                        placeholder="Search by title, topic, or category..."
+                    >
+                </div>
+
+                <div class="profile-field">
+                    <label for="resourceFilter">Filter by Category</label>
+                    <select id="resourceFilter" name="category">
+                        <option value="">All Categories</option>
+                        {% for category in categories %}
+                            <option
+                                value="{{ category }}"
+                                {% if selected_category == category %}selected{% endif %}
+                            >
+                                {{ category }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <button type="submit" class="profile-save-btn">
+                    <i class="bi bi-search"></i>
+                    Find Resources
+                </button>
+
+                {% if search_query or selected_category %}
+                    <a
+                        href="{{ url_for('resources.learning_resources') }}"
+                        class="profile-secondary-btn"
+                    >
+                        Clear Filters
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Resource Library -->
+    <div class="overview-section-header">
+        <p class="page-label">KNOWLEDGE LIBRARY</p>
+        <h2>Explore Resources</h2>
+        <p>
+            Select a resource to view its topics and open the original
+            learning material.
+        </p>
+    </div>
+
+    {% if resources %}
+        <div class="resource-grid">
+            {% for resource in resources %}
+                <article class="resource-card">
+                    <div class="resource-icon">
+                        {% if resource.category == 'Networking' %}
+                            <i class="bi bi-diagram-3"></i>
+                        {% elif resource.category == 'Web Security' %}
+                            <i class="bi bi-globe2"></i>
+                        {% elif resource.category == 'Email Security' %}
+                            <i class="bi bi-envelope-exclamation"></i>
+                        {% elif resource.category == 'Cryptography' %}
+                            <i class="bi bi-key"></i>
+                        {% elif resource.category == 'Digital Forensics' %}
+                            <i class="bi bi-fingerprint"></i>
+                        {% elif resource.category == 'Incident Management' %}
+                            <i class="bi bi-file-earmark-text"></i>
+                        {% elif resource.category == 'Account Security' %}
+                            <i class="bi bi-shield-lock"></i>
+                        {% else %}
+                            <i class="bi bi-shield-check"></i>
+                        {% endif %}
+                    </div>
+
+                    <div class="resource-content">
+                        <span class="resource-type">
+                            {{ resource.category }}
+                        </span>
+
+                        <h3>{{ resource.title }}</h3>
+
+                        <p>{{ resource.description }}</p>
+
+                        <p>
+                            <strong>Level:</strong> {{ resource.level }}
+                        </p>
+
+                        <div class="resource-topics">
+                            {% for topic in resource.topics[:3] %}
+                                <span>{{ topic }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="resource-actions">
+                        <a
+                            href="{{ url_for('resources.resource_detail', resource_id=resource.id) }}"
+                            class="resource-button"
+                        >
+                            View Details
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+
+                        <a
+                            href="{{ resource.url }}"
+                            class="resource-external-link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Open {{ resource.title }} in a new tab"
+                            title="Open external learning resource"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="notification-empty-card">
+            <div class="notification-empty-icon">
+                <i class="bi bi-search"></i>
+            </div>
+            <h3>No Resources Found</h3>
+            <p>
+                Try a different search term or select another category.
+            </p>
+            <a
+                href="{{ url_for('resources.learning_resources') }}"
+                class="profile-secondary-btn"
+            >
+                View All Resources
+            </a>
+        </div>
+    {% endif %}
+
+{% endif %}
+
+<!-- Resource Note -->
+<div class="resource-info-card">
+    <div class="resource-info-icon">
+        <i class="bi bi-info-circle"></i>
+    </div>
+
+    <div>
+        <h3>CyberGuard Knowledge Library</h3>
+        <p>
+            External resources are provided for further learning.
+            Their availability and content are managed by their respective publishers.
+        </p>
+    </div>
+</div>
+
+{% endblock %}

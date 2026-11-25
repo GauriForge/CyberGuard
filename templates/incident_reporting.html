@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Report Incident - CyberGuard{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+    <div>
+        <p class="page-label">INCIDENT MANAGEMENT / REPORT</p>
+        <h1>Report a Security Incident</h1>
+        <p class="page-subtitle">
+            Report a suspected cybersecurity incident and provide the details needed for investigation.
+        </p>
+    </div>
+</div>
+
+<div class="incident-info-card">
+    <div class="incident-info-icon">
+        <i class="bi bi-shield-exclamation"></i>
+    </div>
+    <div>
+        <h3>Before You Report</h3>
+        <p>
+            Provide accurate information about the incident. Include what
+            happened, when it happened, and any relevant evidence or observations.
+        </p>
+    </div>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div
+                class="alert alert-{{ 'danger' if category == 'error' else category if category in ['success', 'danger', 'warning', 'info'] else 'info' }}"
+                role="alert"
+            >
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<div class="incident-form-card">
+    <div class="overview-section-header">
+        <p class="page-label">INCIDENT DETAILS</p>
+        <h2>Incident Information</h2>
+        <p>Complete the following fields to create an incident report.</p>
+    </div>
+
+    <form
+        class="incident-form"
+        method="POST"
+        action="{{ url_for('incidents.report_incident') }}"
+    >
+        <div class="form-group">
+            <label for="title">
+                Incident Title <span aria-hidden="true">*</span>
+            </label>
+            <input
+                type="text"
+                id="title"
+                name="title"
+                placeholder="Enter a short title for the incident"
+                maxlength="150"
+                required
+            >
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="category">
+                    Incident Type <span aria-hidden="true">*</span>
+                </label>
+                <select id="category" name="category" required>
+                    <option value="">Select incident type</option>
+                    {% for category in categories %}
+                    <option value="{{ category }}">{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="severity">
+                    Severity <span aria-hidden="true">*</span>
+                </label>
+                <select id="severity" name="severity" required>
+                    <option value="">Select severity</option>
+                    {% for severity in severities %}
+                    <option value="{{ severity }}">{{ severity }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="incidentDate">Date of Incident</label>
+            <input
+                type="date"
+                id="incidentDate"
+                name="incident_date"
+            >
+            <small class="text-muted">
+                Include the date in your description if it is important to the investigation.
+            </small>
+        </div>
+
+        <div class="form-group">
+            <label for="incidentTime">Approximate Time</label>
+            <input
+                type="time"
+                id="incidentTime"
+                name="incident_time"
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="description">
+                Incident Description <span aria-hidden="true">*</span>
+            </label>
+            <textarea
+                id="description"
+                name="description"
+                rows="6"
+                maxlength="5000"
+                placeholder="Describe what happened, how you noticed the incident, and any actions already taken..."
+                required
+            ></textarea>
+            <small class="text-muted">
+                Maximum 5000 characters.
+            </small>
+        </div>
+
+        <div class="form-group">
+            <label for="evidence">Evidence / Additional Information</label>
+            <textarea
+                id="evidence"
+                name="evidence"
+                rows="4"
+                maxlength="5000"
+                placeholder="Enter relevant URLs, suspicious messages, file names, observations, or other evidence..."
+            ></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="affectedSystem">Affected System / Device</label>
+            <input
+                type="text"
+                id="affectedSystem"
+                name="affected_system"
+                maxlength="250"
+                placeholder="Example: College computer, email account, web application"
+            >
+        </div>
+
+        <div class="incident-form-actions">
+            <button type="reset" class="incident-secondary-button">
+                Clear Form
+            </button>
+
+            <button type="submit" class="incident-primary-button">
+                <i class="bi bi-send"></i>
+                Submit Incident
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="incident-safety-card">
+    <i class="bi bi-info-circle"></i>
+    <p>
+        Include only relevant security information. Do not include passwords
+        or other sensitive credentials. Submit only information you are
+        authorized to share.
+    </p>
+</div>
+
+{% endblock %}

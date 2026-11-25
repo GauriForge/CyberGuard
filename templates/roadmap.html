@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}Cybersecurity Career Roadmap - CyberGuard{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+    <div>
+        <p class="page-label">LEARNING / ROADMAP</p>
+        <h1>Cybersecurity Career Roadmap</h1>
+        <p class="page-subtitle">
+            Start with computer fundamentals, build your technical foundation,
+            practise security skills, and progress towards advanced cybersecurity.
+        </p>
+    </div>
+</div>
+
+<div class="overview-info-grid">
+    <div class="overview-info-card">
+        <i class="bi bi-signpost-split"></i>
+        <div>
+            <span>Learning Stages</span>
+            <strong>{{ stages|length }}</strong>
+        </div>
+    </div>
+
+    <div class="overview-info-card">
+        <i class="bi bi-laptop"></i>
+        <div>
+            <span>Learning Approach</span>
+            <strong>Learn + Practise</strong>
+        </div>
+    </div>
+
+    <div class="overview-info-card">
+        <i class="bi bi-flag"></i>
+        <div>
+            <span>Final Goal</span>
+            <strong>Career Readiness</strong>
+        </div>
+    </div>
+</div>
+
+<div class="overview-section-header">
+    <p class="page-label">FOLLOW IN ORDER</p>
+    <h2>Your Cybersecurity Learning Journey</h2>
+    <p>
+        Work through the stages sequentially. Build your foundation before
+        moving into specialised security topics.
+    </p>
+</div>
+
+<div class="notification-settings roadmap-list">
+
+    {% for stage in stages %}
+    <div class="notification-setting roadmap-stage">
+
+        <div class="notification-setting-icon">
+            {% if stage.id == 1 %}
+                <i class="bi bi-pc-display"></i>
+            {% elif stage.id == 2 %}
+                <i class="bi bi-diagram-3"></i>
+            {% elif stage.id == 3 %}
+                <i class="bi bi-terminal"></i>
+            {% elif stage.id == 4 %}
+                <i class="bi bi-code-slash"></i>
+            {% elif stage.id == 5 %}
+                <i class="bi bi-globe2"></i>
+            {% elif stage.id == 6 %}
+                <i class="bi bi-shield-check"></i>
+            {% elif stage.id == 7 %}
+                <i class="bi bi-tools"></i>
+            {% elif stage.id == 8 %}
+                <i class="bi bi-hdd-network"></i>
+            {% elif stage.id == 9 %}
+                <i class="bi bi-browser-chrome"></i>
+            {% elif stage.id == 10 %}
+                <i class="bi bi-activity"></i>
+            {% elif stage.id == 11 %}
+                <i class="bi bi-search"></i>
+            {% elif stage.id == 12 %}
+                <i class="bi bi-shield-lock"></i>
+            {% else %}
+                <i class="bi bi-flag"></i>
+            {% endif %}
+        </div>
+
+        <div class="notification-setting-content">
+
+            <span class="page-label">
+                STAGE {{ "%02d"|format(stage.id) }} · {{ stage.level|upper }}
+            </span>
+
+            <h3>{{ stage.title }}</h3>
+
+            <p>{{ stage.description }}</p>
+
+            <p>
+                <strong>Suggested duration:</strong> {{ stage.duration }}
+            </p>
+
+            <h4>Topics to Learn</h4>
+            <ul>
+                {% for topic in stage.topics %}
+                <li>{{ topic }}</li>
+                {% endfor %}
+            </ul>
+
+            {% if stage.tasks %}
+            <h4>Practical Tasks</h4>
+            <ul>
+                {% for task in stage.tasks %}
+                <li>{{ task }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            {% if stage.milestone %}
+            <div class="roadmap-milestone">
+                <strong>
+                    <i class="bi bi-check2-circle"></i>
+                    Stage Milestone
+                </strong>
+                <p>{{ stage.milestone }}</p>
+            </div>
+            {% endif %}
+
+            {% if stage.resources %}
+            <h4>Recommended Learning Resources</h4>
+            <ul class="roadmap-resource-list">
+                {% for resource in stage.resources %}
+                <li>
+                    <a href="{{ resource.url }}"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        {{ resource.title }}
+                        <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+
+<div class="overview-section-header">
+    <p class="page-label">STUDY TIPS</p>
+    <h2>Make the Most of Your Learning</h2>
+    <p>Build consistent habits and focus on understanding, not just memorising.</p>
+</div>
+
+<div class="overview-info-grid">
+
+    {% for tip in study_tips %}
+    <div class="overview-info-card">
+        <i class="bi bi-lightbulb"></i>
+        <div>
+            <span>{{ tip }}</span>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+
+<div class="overview-section-header">
+    <p class="page-label">CONTINUE LEARNING</p>
+    <h2>Practise Your Knowledge</h2>
+    <p>
+        Apply the concepts you learn using CyberGuard's educational features.
+    </p>
+</div>
+
+<div class="overview-info-grid">
+
+    <div class="overview-info-card">
+        <i class="bi bi-shield-check"></i>
+        <div>
+            <strong>Attack Categories</strong>
+            <span>Learn how common cyberattacks work and how to defend against them.</span>
+            <a href="{{ url_for('attacks.attack_categories') }}"
+               class="btn btn-outline-primary btn-sm mt-2">
+                Explore Attacks
+            </a>
+        </div>
+    </div>
+
+    <div class="overview-info-card">
+        <i class="bi bi-terminal"></i>
+        <div>
+            <strong>Practical Labs</strong>
+            <span>Apply security concepts through guided activities.</span>
+            <a href="{{ url_for('labs.practical_labs') }}"
+               class="btn btn-outline-primary btn-sm mt-2">
+                Explore Labs
+            </a>
+        </div>
+    </div>
+
+    <div class="overview-info-card">
+        <i class="bi bi-clipboard-check"></i>
+        <div>
+            <strong>Assessments</strong>
+            <span>Test your knowledge and identify areas to improve.</span>
+            <a href="{{ url_for('assessments.assessment_list') }}"
+               class="btn btn-outline-primary btn-sm mt-2">
+                Take Assessments
+            </a>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

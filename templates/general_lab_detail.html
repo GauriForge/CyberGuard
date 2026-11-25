@@ -1,0 +1,488 @@
+
+{% extends "base.html" %}
+
+{% block title %}{{ activity.title }} - CyberGuard Practical Lab{% endblock %}
+
+{% block content %}
+
+<div class="learning-page general-lab-page">
+
+    <!-- Page Header -->
+    <div class="learning-header">
+        <div>
+            <div class="breadcrumb-text">
+                <a href="{{ url_for('labs.index') }}">
+                    Practical Labs
+                </a>
+                <i class="bi bi-chevron-right"></i>
+                <a href="{{ url_for(
+                    'labs.general_practice',
+                    level_id=selected_level.id
+                ) }}">
+                    {{ selected_level.name }} Practice
+                </a>
+                <i class="bi bi-chevron-right"></i>
+                <span>Activity</span>
+            </div>
+
+            <h1>{{ activity.title }}</h1>
+
+            <p>
+                {{ activity.description or
+                   'Complete this guided cybersecurity practice activity
+                   to strengthen your security awareness and skills.' }}
+            </p>
+        </div>
+
+        <span class="difficulty beginner">
+            {{ activity.difficulty or selected_level.name or 'Beginner' }}
+        </span>
+    </div>
+
+    <!-- Activity Overview -->
+    <div class="overview-info-grid">
+
+        <div class="overview-info-card">
+            <i class="bi bi-mortarboard"></i>
+            <div>
+                <span>Practice Level</span>
+                <strong>{{ selected_level.name }}</strong>
+            </div>
+        </div>
+
+        <div class="overview-info-card">
+            <i class="bi bi-journal-check"></i>
+            <div>
+                <span>Activity Type</span>
+                <strong>
+                    {% if activity.options %}
+                        Knowledge Check
+                    {% elif activity.type == 'password' %}
+                        Password Analysis
+                    {% else %}
+                        Guided Practice
+                    {% endif %}
+                </strong>
+            </div>
+        </div>
+
+        <div class="overview-info-card">
+            <i class="bi bi-shield-check"></i>
+            <div>
+                <span>Learning Environment</span>
+                <strong>Safe Practice</strong>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Introduction -->
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon blue">
+                <i class="bi bi-info-circle"></i>
+            </div>
+
+            <div>
+                <h2>Activity Overview</h2>
+                <p>Understand the purpose of this exercise.</p>
+            </div>
+        </div>
+
+        <p>
+            {{ activity.description or
+               'Work through the instructions and complete the activity
+               using the cybersecurity concepts you have learned.' }}
+        </p>
+
+        {% if activity.instructions %}
+        <div class="general-lab-instructions">
+            <h3>
+                <i class="bi bi-list-check"></i>
+                Instructions
+            </h3>
+            <p>{{ activity.instructions }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Scenario -->
+    {% if activity.scenario %}
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon purple">
+                <i class="bi bi-journal-text"></i>
+            </div>
+
+            <div>
+                <h2>Practice Scenario</h2>
+                <p>Review the situation before answering.</p>
+            </div>
+        </div>
+
+        <div class="general-lab-scenario">
+            {{ activity.scenario }}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Activity Message -->
+    {% if activity.message %}
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon blue">
+                <i class="bi bi-lightbulb"></i>
+            </div>
+
+            <div>
+                <h2>Additional Guidance</h2>
+                <p>Information to help you complete the exercise.</p>
+            </div>
+        </div>
+
+        <p>{{ activity.message }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Activity Form -->
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon green">
+                <i class="bi bi-pencil-square"></i>
+            </div>
+
+            <div>
+                <h2>Complete the Activity</h2>
+                <p>Submit your response to review your understanding.</p>
+            </div>
+        </div>
+
+        {% if result %}
+        <div
+            class="general-lab-result
+            {% if result.is_correct %}
+                result-correct
+            {% elif result.status == 'error' %}
+                result-error
+            {% else %}
+                result-incorrect
+            {% endif %}"
+            role="status"
+            aria-live="polite"
+        >
+            <div class="result-heading">
+                {% if result.is_correct %}
+                    <i class="bi bi-check-circle-fill"></i>
+                {% elif result.status == 'error' %}
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                {% else %}
+                    <i class="bi bi-info-circle-fill"></i>
+                {% endif %}
+
+                <h3>{{ result.message }}</h3>
+            </div>
+
+            {% if result.score is defined %}
+            <p>
+                <strong>Score:</strong>
+                {{ result.score }}
+            </p>
+            {% endif %}
+
+            {% if result.feedback %}
+                {% if result.feedback is string %}
+                <p>{{ result.feedback }}</p>
+                {% else %}
+                <ul>
+                    {% for item in result.feedback %}
+                    <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            {% endif %}
+
+            {% if result.explanation %}
+            <div class="result-explanation">
+                <h4>Explanation</h4>
+                <p>{{ result.explanation }}</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if activity.type == 'password' %}
+
+        <form
+            method="POST"
+            action="{{ url_for(
+                'labs.general_practice_activity',
+                level_id=selected_level.id,
+                activity_id=activity.id
+            ) }}"
+        >
+            <label for="sample_password" class="form-label">
+                Enter a sample password to analyze
+            </label>
+
+            <input
+                type="text"
+                id="sample_password"
+                name="sample_password"
+                class="form-control"
+                required
+                autocomplete="off"
+                placeholder="Enter a fictional test password"
+            >
+
+            <small class="form-text text-muted">
+                Use a fictional password only. Never enter a real account
+                password into a training exercise.
+            </small>
+
+            <button type="submit" class="primary-button general-lab-submit">
+                <i class="bi bi-shield-check"></i>
+                Check Password
+            </button>
+        </form>
+
+        {% elif activity.options %}
+
+        <form
+            method="POST"
+            action="{{ url_for(
+                'labs.general_practice_activity',
+                level_id=selected_level.id,
+                activity_id=activity.id
+            ) }}"
+        >
+            <fieldset class="general-lab-options">
+                <legend>
+                    {{ activity.question or 'Choose the best answer' }}
+                </legend>
+
+                {% for option in activity.options %}
+                <label class="general-lab-option">
+                    <input
+                        type="radio"
+                        name="answer"
+                        value="{{ option }}"
+                        required
+                    >
+
+                    <span>{{ option }}</span>
+                </label>
+                {% endfor %}
+            </fieldset>
+
+            <button type="submit" class="primary-button general-lab-submit">
+                <i class="bi bi-check2-circle"></i>
+                Submit Answer
+            </button>
+        </form>
+
+        {% else %}
+
+        <div class="general-lab-instructions">
+            <i class="bi bi-info-circle"></i>
+            <p>
+                Review the instructions and scenario above. This activity
+                does not currently provide an answer form.
+            </p>
+        </div>
+
+        {% endif %}
+    </div>
+
+    <!-- Learning Tips -->
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon orange">
+                <i class="bi bi-lightbulb"></i>
+            </div>
+
+            <div>
+                <h2>Learning Tips</h2>
+                <p>Make the most of your practice session.</p>
+            </div>
+        </div>
+
+        <ul class="protection-list">
+            <li>
+                <i class="bi bi-check-circle"></i>
+                Read the scenario carefully before choosing an answer.
+            </li>
+
+            <li>
+                <i class="bi bi-check-circle"></i>
+                Consider both the security risks and the appropriate
+                defensive response.
+            </li>
+
+            <li>
+                <i class="bi bi-check-circle"></i>
+                Review any feedback or explanation after submitting.
+            </li>
+
+            <li>
+                <i class="bi bi-check-circle"></i>
+                Practise only with fictional data and authorized systems.
+            </li>
+        </ul>
+    </div>
+
+    <!-- Navigation -->
+    <div class="general-lab-navigation">
+        <a
+            href="{{ url_for(
+                'labs.general_practice',
+                level_id=selected_level.id
+            ) }}"
+            class="btn btn-outline-secondary"
+        >
+            <i class="bi bi-arrow-left"></i>
+            Back to {{ selected_level.name }} Practice
+        </a>
+
+        <a
+            href="{{ url_for('labs.index') }}"
+            class="btn btn-outline-primary"
+        >
+            <i class="bi bi-grid"></i>
+            All Practical Labs
+        </a>
+    </div>
+
+</div>
+
+<style>
+.general-lab-page .general-lab-instructions,
+.general-lab-page .general-lab-scenario {
+    padding: 18px;
+    margin-top: 16px;
+    border: 1px solid var(--border-color, #e0e5ed);
+    border-radius: 12px;
+    background: var(--card-bg, #fff);
+}
+
+.general-lab-page .general-lab-instructions h3 {
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.general-lab-page .general-lab-instructions p:last-child {
+    margin-bottom: 0;
+}
+
+.general-lab-page .general-lab-scenario {
+    line-height: 1.8;
+    white-space: pre-line;
+}
+
+.general-lab-page .general-lab-options {
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px solid var(--border-color, #e0e5ed);
+    border-radius: 12px;
+}
+
+.general-lab-page .general-lab-options legend {
+    float: none;
+    width: auto;
+    padding: 0 8px;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.general-lab-page .general-lab-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px;
+    margin: 10px 0;
+    border: 1px solid var(--border-color, #e0e5ed);
+    border-radius: 9px;
+    cursor: pointer;
+}
+
+.general-lab-page .general-lab-option:hover {
+    background: var(--surface-secondary, #f5f7fa);
+}
+
+.general-lab-page .general-lab-option input {
+    margin-top: 5px;
+    flex-shrink: 0;
+}
+
+.general-lab-page .general-lab-option span {
+    line-height: 1.6;
+}
+
+.general-lab-page .general-lab-submit {
+    margin-top: 16px;
+}
+
+.general-lab-page .general-lab-result {
+    padding: 18px;
+    margin: 18px 0;
+    border: 1px solid var(--border-color, #e0e5ed);
+    border-radius: 12px;
+}
+
+.general-lab-page .result-correct {
+    border-color: #399765;
+}
+
+.general-lab-page .result-incorrect {
+    border-color: #d8a044;
+}
+
+.general-lab-page .result-error {
+    border-color: #dc6262;
+}
+
+.general-lab-page .result-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.general-lab-page .result-heading h3 {
+    font-size: 1.05rem;
+    margin: 0;
+}
+
+.general-lab-page .result-heading i {
+    font-size: 1.2rem;
+}
+
+.general-lab-page .result-explanation {
+    padding-top: 12px;
+    margin-top: 12px;
+    border-top: 1px solid var(--border-color, #e0e5ed);
+}
+
+.general-lab-page .result-explanation h4 {
+    font-size: 1rem;
+}
+
+.general-lab-page .general-lab-navigation {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: space-between;
+    margin: 24px 0;
+}
+
+@media (max-width: 600px) {
+    .general-lab-page .general-lab-navigation {
+        flex-direction: column;
+    }
+
+    .general-lab-page .general-lab-navigation a {
+        width: 100%;
+        text-align: center;
+    }
+}
+</style>
+
+{% endblock %}

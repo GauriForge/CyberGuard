@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if subcategory %}
+        {{ subcategory.name }} - CyberGuard
+    {% else %}
+        {{ category.name }} Overview - CyberGuard
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+    <div>
+        <p class="page-label">CYBERSECURITY LEARNING / CATEGORY OVERVIEW</p>
+
+        {% if subcategory %}
+            <h1>{{ subcategory.name }}</h1>
+            <p class="page-subtitle">
+                Explore individual attacks, understand their warning signs,
+                and learn effective prevention strategies.
+            </p>
+        {% else %}
+            <h1>{{ category.name }}</h1>
+            <p class="page-subtitle">
+                Explore the subcategories and attack techniques in this category
+                to learn how to recognize and prevent cyber threats.
+            </p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="overview-card">
+    <div class="overview-icon">
+        <i class="bi bi-shield-lock"></i>
+    </div>
+
+    <div class="overview-content">
+        {% if subcategory %}
+            <h2>About {{ subcategory.name }}</h2>
+            <p>{{ subcategory.description }}</p>
+            <p>
+                Select an attack to explore its characteristics, examples,
+                warning signs, and defensive measures.
+            </p>
+        {% else %}
+            <h2>About {{ category.name }}</h2>
+            <p>{{ category.description }}</p>
+            <p>
+                {% if subcategories %}
+                    Choose a subcategory to explore its individual attacks
+                    and learning material.
+                {% else %}
+                    Explore each attack to understand its characteristics,
+                    potential impact, warning signs, and defensive measures.
+                {% endif %}
+            </p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="overview-info-grid">
+
+    <div class="overview-info-card">
+        <i class="bi bi-diagram-3"></i>
+        <div>
+            <span>
+                {% if subcategories %}
+                    Subcategories
+                {% else %}
+                    Attack Types
+                {% endif %}
+            </span>
+            <strong>
+                {% if subcategories %}
+                    {{ subcategories|length }}
+                {% else %}
+                    {{ attacks|length }}
+                {% endif %}
+            </strong>
+        </div>
+    </div>
+
+    <div class="overview-info-card">
+        <i class="bi bi-book"></i>
+        <div>
+            <span>Learning Mode</span>
+            <strong>Interactive</strong>
+        </div>
+    </div>
+
+    <div class="overview-info-card">
+        <i class="bi bi-shield-check"></i>
+        <div>
+            <span>Learning Focus</span>
+            <strong>Awareness &amp; Protection</strong>
+        </div>
+    </div>
+
+</div>
+
+{% if subcategories %}
+
+<div class="overview-section-header">
+    <p class="page-label">EXPLORE SUBCATEGORIES</p>
+    <h2>Types of {{ category.name }}</h2>
+    <p>Select a subcategory to view its individual attacks.</p>
+</div>
+
+<div class="overview-topic-grid">
+
+    {% for item in subcategories %}
+
+    <a href="{{ url_for(
+        'attacks.attack_subcategory',
+        category_id=category.id,
+        subcategory_id=item.id
+    ) }}"
+       class="overview-topic-card">
+
+        <div class="overview-topic-number">
+            {{ "%02d"|format(loop.index) }}
+        </div>
+
+        <div class="overview-topic-content">
+            <h3>{{ item.name }}</h3>
+
+            {% if item.description %}
+                <p>{{ item.description }}</p>
+            {% endif %}
+
+            <span>
+                {{ item.count }}
+                {% if item.count == 1 %}
+                    Attack
+                {% else %}
+                    Attacks
+                {% endif %}
+                <i class="bi bi-arrow-right"></i>
+            </span>
+        </div>
+
+    </a>
+
+    {% else %}
+    <div class="empty-state">
+        <i class="bi bi-info-circle"></i>
+        <h3>No Subcategories Available</h3>
+        <p>No subcategories were found for this category.</p>
+    </div>
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="overview-section-header">
+    <p class="page-label">EXPLORE ATTACKS</p>
+
+    <h2>
+        {% if subcategory %}
+            Attacks in {{ subcategory.name }}
+        {% else %}
+            Types of {{ category.name }} Attacks
+        {% endif %}
+    </h2>
+
+    <p>Select an attack to explore its learning material.</p>
+</div>
+
+<div class="overview-topic-grid">
+
+    {% for topic in attacks %}
+
+    <a href="{{ url_for(
+        'attacks.subcategory_attack_learning',
+        category_id=category.id,
+        subcategory_id=subcategory.id,
+        attack_id=topic.id
+    ) if subcategory else url_for(
+        'attacks.attack_learning',
+        category_id=category.id,
+        attack_id=topic.id
+    ) }}"
+       class="overview-topic-card">
+
+        <div class="overview-topic-number">
+            {{ "%02d"|format(loop.index) }}
+        </div>
+
+        <div class="overview-topic-content">
+            <h3>{{ topic.name }}</h3>
+
+            {% if topic.summary %}
+                <p>{{ topic.summary }}</p>
+            {% elif topic.description %}
+                <p>{{ topic.description }}</p>
+            {% endif %}
+
+            <span>
+                Explore Attack
+                <i class="bi bi-arrow-right"></i>
+            </span>
+        </div>
+
+    </a>
+
+    {% else %}
+    <div class="empty-state">
+        <i class="bi bi-info-circle"></i>
+        <h3>No Attack Types Available</h3>
+        <p>No attack entries were found for this selection.</p>
+    </div>
+    {% endfor %}
+
+</div>
+
+{% endif %}
+
+<div class="overview-back">
+    {% if subcategory %}
+        <a href="{{ url_for(
+            'attacks.attack_overview',
+            category_id=category.id
+        ) }}">
+            <i class="bi bi-arrow-left"></i>
+            Back to {{ category.name }}
+        </a>
+    {% else %}
+        <a href="{{ url_for('attacks.attack_categories') }}">
+            <i class="bi bi-arrow-left"></i>
+            Back to Attack Categories
+        </a>
+    {% endif %}
+</div>
+
+{% endblock %}

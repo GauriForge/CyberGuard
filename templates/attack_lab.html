@@ -1,0 +1,453 @@
+
+{% extends "base.html" %}
+
+{% block title %}{{ attack.name }} - Practical Lab - CyberGuard{% endblock %}
+
+{% block content %}
+
+<div class="learning-page">
+
+    <!-- Lab Header -->
+    <div class="learning-header">
+        <div>
+            <div class="breadcrumb-text">
+                <a href="{{ url_for('attacks.attack_categories') }}">
+                    Learning
+                </a>
+                <i class="bi bi-chevron-right"></i>
+
+                <a href="{{ url_for(
+                    'attacks.attack_overview',
+                    category_id=category.id
+                ) }}">
+                    {{ category.name }}
+                </a>
+
+                <i class="bi bi-chevron-right"></i>
+                <span>Practical Lab</span>
+            </div>
+
+            <h1>{{ attack.name }}: Practical Lab</h1>
+
+            <p>
+                Apply your knowledge, identify security indicators,
+                and practise defensive techniques in a safe environment.
+            </p>
+        </div>
+
+        <span class="difficulty beginner">
+            Beginner
+        </span>
+    </div>
+
+    <!-- Lab Information -->
+    <div class="overview-info-grid">
+
+        <div class="overview-info-card">
+            <i class="bi bi-clock"></i>
+            <div>
+                <span>Estimated Duration</span>
+                <strong>15–20 Minutes</strong>
+            </div>
+        </div>
+
+        <div class="overview-info-card">
+            <i class="bi bi-shield-check"></i>
+            <div>
+                <span>Environment</span>
+                <strong>Safe Practice</strong>
+            </div>
+        </div>
+
+        <div class="overview-info-card">
+            <i class="bi bi-list-check"></i>
+            <div>
+                <span>Lab Tasks</span>
+                <strong>4 Tasks</strong>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Introduction -->
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon blue">
+                <i class="bi bi-info-circle"></i>
+            </div>
+
+            <div>
+                <h2>Lab Overview</h2>
+                <p>Understand what you will practise.</p>
+            </div>
+        </div>
+
+        <p>
+            This practical lab helps you reinforce your understanding
+            of <strong>{{ attack.name }}</strong> through observation,
+            analysis, and defensive decision-making.
+        </p>
+
+        {% if attack.get('summary') %}
+            <p>{{ attack.summary }}</p>
+        {% elif attack.get('description') %}
+            <p>{{ attack.description }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Learning Objectives -->
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon purple">
+                <i class="bi bi-bullseye"></i>
+            </div>
+
+            <div>
+                <h2>Learning Objectives</h2>
+                <p>By completing this lab, you should be able to:</p>
+            </div>
+        </div>
+
+        <ul class="protection-list">
+            <li>
+                <i class="bi bi-check-circle"></i>
+                Recognize common indicators associated with
+                {{ attack.name }}.
+            </li>
+
+            <li>
+                <i class="bi bi-check-circle"></i>
+                Analyze a simulated security scenario.
+            </li>
+
+            <li>
+                <i class="bi bi-check-circle"></i>
+                Identify appropriate defensive measures.
+            </li>
+
+            <li>
+                <i class="bi bi-check-circle"></i>
+                Explain how to report and document a suspected threat.
+            </li>
+        </ul>
+    </div>
+
+    <!-- Safety Guidelines -->
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon orange">
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+
+            <div>
+                <h2>Safety Guidelines</h2>
+                <p>Follow these rules throughout the exercise.</p>
+            </div>
+        </div>
+
+        <ul class="protection-list">
+            <li>
+                <i class="bi bi-shield-check"></i>
+                Use fictional scenarios and authorized training environments.
+            </li>
+
+            <li>
+                <i class="bi bi-shield-check"></i>
+                Do not test systems, accounts, or networks without permission.
+            </li>
+
+            <li>
+                <i class="bi bi-shield-check"></i>
+                Never enter real passwords, personal information, or
+                confidential data into practice exercises.
+            </li>
+
+            <li>
+                <i class="bi bi-shield-check"></i>
+                Focus on identifying, preventing, and responding to threats.
+            </li>
+        </ul>
+    </div>
+
+    <!-- Practical Tasks -->
+    <div class="overview-section-header">
+        <p class="page-label">HANDS-ON PRACTICE</p>
+        <h2>Lab Tasks</h2>
+        <p>Work through each task and mark it complete when finished.</p>
+    </div>
+
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon blue">
+                <i class="bi bi-search"></i>
+            </div>
+
+            <div>
+                <h2>Task 1: Identify Indicators</h2>
+                <p>Observe the scenario and identify possible warning signs.</p>
+            </div>
+        </div>
+
+        <p>
+            Review the learning material for {{ attack.name }}.
+            Identify at least three warning signs that could indicate
+            suspicious or malicious activity.
+        </p>
+
+        <div class="alert alert-light border">
+            <strong>Expected outcome:</strong>
+            A list of relevant indicators and a brief explanation
+            of why each one matters.
+        </div>
+
+        <label for="lab-task-1" class="form-label">
+            Record your observations
+        </label>
+
+        <textarea
+            id="lab-task-1"
+            class="form-control"
+            rows="4"
+            placeholder="Describe the warning signs you identified..."
+        ></textarea>
+    </div>
+
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon purple">
+                <i class="bi bi-journal-text"></i>
+            </div>
+
+            <div>
+                <h2>Task 2: Analyze the Scenario</h2>
+                <p>Consider the possible risks and consequences.</p>
+            </div>
+        </div>
+
+        <p>
+            Imagine that a user reports activity potentially associated
+            with {{ attack.name }}. Review the available information and
+            consider which assets, accounts, or data might be at risk.
+        </p>
+
+        <label for="lab-task-2" class="form-label">
+            Describe your analysis
+        </label>
+
+        <textarea
+            id="lab-task-2"
+            class="form-control"
+            rows="4"
+            placeholder="Describe the potential risks and impact..."
+        ></textarea>
+    </div>
+
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon green">
+                <i class="bi bi-shield-check"></i>
+            </div>
+
+            <div>
+                <h2>Task 3: Recommend Defenses</h2>
+                <p>Choose suitable protective measures.</p>
+            </div>
+        </div>
+
+        <p>
+            Based on your findings, recommend practical steps that
+            could prevent the attack, reduce its impact, or help detect
+            similar activity in the future.
+        </p>
+
+        {% set prevention = attack.get('prevention')
+            or attack.get('mitigation')
+            or attack.get('protection') %}
+
+        {% if prevention %}
+            <div class="alert alert-light border">
+                <strong>Reference material</strong>
+
+                {% if prevention is string %}
+                    <p class="mb-0 mt-2">{{ prevention }}</p>
+                {% else %}
+                    <ul class="mb-0 mt-2">
+                        {% for item in prevention %}
+                            <li>
+                                {% if item is mapping %}
+                                    {{ item.get('description')
+                                        or item.get('name')
+                                        or item }}
+                                {% else %}
+                                    {{ item }}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <label for="lab-task-3" class="form-label">
+            Record your defensive recommendations
+        </label>
+
+        <textarea
+            id="lab-task-3"
+            class="form-control"
+            rows="4"
+            placeholder="Describe the defenses you recommend..."
+        ></textarea>
+    </div>
+
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon orange">
+                <i class="bi bi-clipboard-check"></i>
+            </div>
+
+            <div>
+                <h2>Task 4: Incident Response</h2>
+                <p>Outline the appropriate response to a suspected threat.</p>
+            </div>
+        </div>
+
+        <p>
+            Explain how you would document your findings, notify the
+            appropriate security team, and help preserve relevant
+            evidence according to organizational procedures.
+        </p>
+
+        <label for="lab-task-4" class="form-label">
+            Record your response plan
+        </label>
+
+        <textarea
+            id="lab-task-4"
+            class="form-control"
+            rows="4"
+            placeholder="Describe the response and reporting steps..."
+        ></textarea>
+    </div>
+
+    <!-- Completion Checklist -->
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon green">
+                <i class="bi bi-check2-square"></i>
+            </div>
+
+            <div>
+                <h2>Lab Completion Checklist</h2>
+                <p>Review your work before finishing.</p>
+            </div>
+        </div>
+
+        <div class="form-check mb-3">
+            <input
+                class="form-check-input"
+                type="checkbox"
+                id="check-1"
+            >
+            <label class="form-check-label" for="check-1">
+                I identified relevant warning signs.
+            </label>
+        </div>
+
+        <div class="form-check mb-3">
+            <input
+                class="form-check-input"
+                type="checkbox"
+                id="check-2"
+            >
+            <label class="form-check-label" for="check-2">
+                I analyzed the potential impact.
+            </label>
+        </div>
+
+        <div class="form-check mb-3">
+            <input
+                class="form-check-input"
+                type="checkbox"
+                id="check-3"
+            >
+            <label class="form-check-label" for="check-3">
+                I recommended appropriate defensive measures.
+            </label>
+        </div>
+
+        <div class="form-check mb-3">
+            <input
+                class="form-check-input"
+                type="checkbox"
+                id="check-4"
+            >
+            <label class="form-check-label" for="check-4">
+                I documented a suitable incident response plan.
+            </label>
+        </div>
+
+        <div class="alert alert-info mt-4 mb-0">
+            <i class="bi bi-info-circle"></i>
+            This checklist is for self-review. Progress is not saved
+            to your account by this template alone.
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon blue">
+                <i class="bi bi-arrow-left-right"></i>
+            </div>
+
+            <div>
+                <h2>Continue Learning</h2>
+                <p>Explore related learning activities.</p>
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-3">
+            <a
+                href="{{ url_for(
+                    'attacks.attack_learning',
+                    category_id=category.id,
+                    attack_id=attack.id
+                ) }}"
+                class="primary-button"
+            >
+                <i class="bi bi-book"></i>
+                Review Attack
+            </a>
+
+            <a
+                href="{{ url_for('labs.practical_labs') }}"
+                class="primary-button"
+            >
+                <i class="bi bi-beaker"></i>
+                All Practical Labs
+            </a>
+
+            <a
+                href="{{ url_for('assessments.assessment_list') }}"
+                class="primary-button"
+            >
+                <i class="bi bi-clipboard-check"></i>
+                Take Assessment
+            </a>
+        </div>
+    </div>
+
+    <div class="overview-back">
+        <a href="{{ url_for(
+            'attacks.attack_overview',
+            category_id=category.id
+        ) }}">
+            <i class="bi bi-arrow-left"></i>
+            Back to {{ category.name }}
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

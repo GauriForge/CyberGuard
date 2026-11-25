@@ -1,0 +1,399 @@
+
+{% extends "base.html" %}
+
+{% block title %}{{ case_study.get('title', 'Attack Case Study') }} - CyberGuard{% endblock %}
+
+{% block content %}
+
+<div class="learning-page">
+
+    <!-- Page Header -->
+    <div class="learning-header">
+        <div>
+            <div class="breadcrumb-text">
+                <a href="{{ url_for('attacks.attack_categories') }}">
+                    Learning
+                </a>
+
+                <i class="bi bi-chevron-right"></i>
+
+                {% if category %}
+                <a href="{{ url_for(
+                    'attacks.attack_overview',
+                    category_id=category.id
+                ) }}">
+                    {{ category.name }}
+                </a>
+                <i class="bi bi-chevron-right"></i>
+                {% endif %}
+
+                <span>Case Study</span>
+            </div>
+
+            <p class="page-label">CYBERSECURITY CASE STUDY</p>
+
+            <h1>
+                {{ case_study.get('title', 'Attack Case Study') }}
+            </h1>
+
+            <p>
+                {{ case_study.get(
+                    'summary',
+                    'Explore this cybersecurity incident, understand its impact, and learn how similar threats can be prevented.'
+                ) }}
+            </p>
+        </div>
+
+        {% if case_study.get('severity') %}
+        <span class="difficulty">
+            {{ case_study.get('severity')|title }} Severity
+        </span>
+        {% endif %}
+    </div>
+
+    <!-- Case Study Information -->
+    <div class="overview-info-grid">
+
+        <div class="overview-info-card">
+            <i class="bi bi-shield-exclamation"></i>
+            <div>
+                <span>Attack Type</span>
+                <strong>
+                    {{ case_study.get('attack_type', 'Cybersecurity Incident') }}
+                </strong>
+            </div>
+        </div>
+
+        <div class="overview-info-card">
+            <i class="bi bi-calendar-event"></i>
+            <div>
+                <span>Incident Date</span>
+                <strong>
+                    {{ case_study.get('date', 'Not specified') }}
+                </strong>
+            </div>
+        </div>
+
+        <div class="overview-info-card">
+            <i class="bi bi-building"></i>
+            <div>
+                <span>Target</span>
+                <strong>
+                    {{ case_study.get('target', 'Not specified') }}
+                </strong>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Incident Overview -->
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon blue">
+                <i class="bi bi-info-circle"></i>
+            </div>
+
+            <div>
+                <h2>Incident Overview</h2>
+                <p>Understand what happened and why it matters.</p>
+            </div>
+        </div>
+
+        <p>
+            {{ case_study.get(
+                'overview',
+                'Detailed incident information has not been provided yet.'
+            ) }}
+        </p>
+
+        {% if case_study.get('background') %}
+        <h3>Background</h3>
+        <p>{{ case_study.get('background') }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Attack Method -->
+    {% if case_study.get('attack_method') %}
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon purple">
+                <i class="bi bi-diagram-3"></i>
+            </div>
+
+            <div>
+                <h2>How the Attack Happened</h2>
+                <p>Review the methods used during the incident.</p>
+            </div>
+        </div>
+
+        <p>{{ case_study.get('attack_method') }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Incident Timeline -->
+    {% set timeline = case_study.get('timeline', []) %}
+
+    {% if timeline %}
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon blue">
+                <i class="bi bi-clock-history"></i>
+            </div>
+
+            <div>
+                <h2>Incident Timeline</h2>
+                <p>Follow the key stages of the incident.</p>
+            </div>
+        </div>
+
+        <div class="activity-list">
+            {% for event in timeline %}
+            <div class="activity-item">
+                <div class="activity-icon learning">
+                    <i class="bi bi-clock"></i>
+                </div>
+
+                <div>
+                    {% if event is mapping %}
+                        <h4>
+                            {{ event.get('date', event.get('time', 'Incident event')) }}
+                        </h4>
+
+                        <p>
+                            {{ event.get(
+                                'description',
+                                event.get('event', event.get('title', ''))
+                            ) }}
+                        </p>
+                    {% else %}
+                        <p>{{ event }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Impact -->
+    {% set impacts = case_study.get('impact', []) %}
+
+    {% if impacts %}
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon red">
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+
+            <div>
+                <h2>Impact and Consequences</h2>
+                <p>Examine the effects of the incident.</p>
+            </div>
+        </div>
+
+        {% if impacts is string %}
+        <p>{{ impacts }}</p>
+        {% else %}
+        <ul class="protection-list">
+            {% for item in impacts %}
+            <li>
+                <i class="bi bi-exclamation-circle"></i>
+
+                {% if item is mapping %}
+                    {{ item.get('description', item.get('name', '')) }}
+                {% else %}
+                    {{ item }}
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Response -->
+    {% if case_study.get('response') %}
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon green">
+                <i class="bi bi-shield-check"></i>
+            </div>
+
+            <div>
+                <h2>Incident Response</h2>
+                <p>Understand how the incident was handled.</p>
+            </div>
+        </div>
+
+        <p>{{ case_study.get('response') }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Lessons Learned -->
+    {% set lessons = case_study.get('lessons_learned', []) %}
+
+    {% if lessons %}
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon purple">
+                <i class="bi bi-lightbulb"></i>
+            </div>
+
+            <div>
+                <h2>Lessons Learned</h2>
+                <p>Identify the most important security takeaways.</p>
+            </div>
+        </div>
+
+        {% if lessons is string %}
+        <p>{{ lessons }}</p>
+        {% else %}
+        <ul class="protection-list">
+            {% for lesson in lessons %}
+            <li>
+                <i class="bi bi-check-circle"></i>
+
+                {% if lesson is mapping %}
+                    {{ lesson.get('description', lesson.get('title', '')) }}
+                {% else %}
+                    {{ lesson }}
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Recommendations -->
+    {% set recommendations = case_study.get('recommendations', []) %}
+
+    {% if recommendations %}
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon green">
+                <i class="bi bi-shield-lock"></i>
+            </div>
+
+            <div>
+                <h2>Prevention and Recommendations</h2>
+                <p>Apply defensive practices to reduce future risk.</p>
+            </div>
+        </div>
+
+        {% if recommendations is string %}
+        <p>{{ recommendations }}</p>
+        {% else %}
+        <ul class="protection-list">
+            {% for recommendation in recommendations %}
+            <li>
+                <i class="bi bi-check-circle"></i>
+
+                {% if recommendation is mapping %}
+                    {{ recommendation.get(
+                        'description',
+                        recommendation.get('title', '')
+                    ) }}
+                {% else %}
+                    {{ recommendation }}
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Source -->
+    {% if case_study.get('source') %}
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon blue">
+                <i class="bi bi-journal-text"></i>
+            </div>
+
+            <div>
+                <h2>References</h2>
+                <p>Source material for further reading.</p>
+            </div>
+        </div>
+
+        {% if case_study.get('source_url') %}
+        <p>
+            <a href="{{ case_study.get('source_url') }}"
+               target="_blank"
+               rel="noopener noreferrer">
+                {{ case_study.get('source') }}
+                <i class="bi bi-box-arrow-up-right"></i>
+            </a>
+        </p>
+        {% else %}
+        <p>{{ case_study.get('source') }}</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Continue Learning -->
+    <div class="learning-content-card practical-card">
+        <div class="learning-section-heading">
+            <div class="section-icon purple">
+                <i class="bi bi-mortarboard"></i>
+            </div>
+
+            <div>
+                <h2>Continue Learning</h2>
+                <p>Build on the knowledge from this case study.</p>
+            </div>
+        </div>
+
+        <p>
+            Explore related attack topics, practise defensive techniques
+            in guided labs, and test your cybersecurity knowledge.
+        </p>
+
+        <div class="quick-actions">
+            {% if category %}
+            <a href="{{ url_for(
+                'attacks.attack_overview',
+                category_id=category.id
+            ) }}" class="quick-action">
+                <i class="bi bi-shield"></i>
+                <span>Related Attacks</span>
+            </a>
+            {% endif %}
+
+            <a href="{{ url_for('labs.practical_labs') }}"
+               class="quick-action">
+                <i class="bi bi-beaker"></i>
+                <span>Practical Labs</span>
+            </a>
+
+            <a href="{{ url_for('assessments.assessment_list') }}"
+               class="quick-action">
+                <i class="bi bi-clipboard-check"></i>
+                <span>Assessments</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Back Navigation -->
+    <div class="overview-back">
+        {% if category %}
+        <a href="{{ url_for(
+            'attacks.attack_overview',
+            category_id=category.id
+        ) }}">
+            <i class="bi bi-arrow-left"></i>
+            Back to {{ category.name }}
+        </a>
+        {% else %}
+        <a href="{{ url_for('attacks.attack_categories') }}">
+            <i class="bi bi-arrow-left"></i>
+            Back to Attack Categories
+        </a>
+        {% endif %}
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,208 @@
+
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - CyberGuard{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+    <div>
+        <p class="welcome-label">ADMINISTRATION</p>
+        <h1>CyberGuard Admin Dashboard</h1>
+        <p class="dashboard-subtitle">
+            Monitor users, review reported incidents, and manage platform activity.
+        </p>
+    </div>
+
+    <a href="{{ url_for('admin.incidents') }}" class="primary-button">
+        <i class="bi bi-shield-exclamation"></i>
+        Manage Incidents
+    </a>
+</div>
+
+<!-- Admin Statistics -->
+<div class="stats-grid">
+
+    <div class="stat-card">
+        <div class="stat-icon blue">
+            <i class="bi bi-people"></i>
+        </div>
+        <div>
+            <span>Total Registered Users</span>
+            <h3>{{ total_users|default(0) }}</h3>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon purple">
+            <i class="bi bi-folder2-open"></i>
+        </div>
+        <div>
+            <span>Total Incidents</span>
+            <h3>{{ total_incidents|default(0) }}</h3>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon orange">
+            <i class="bi bi-hourglass-split"></i>
+        </div>
+        <div>
+            <span>Open Incidents</span>
+            <h3>{{ open_incidents|default(0) }}</h3>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon green">
+            <i class="bi bi-check-circle"></i>
+        </div>
+        <div>
+            <span>Resolved Incidents</span>
+            <h3>{{ (total_incidents|default(0) - open_incidents|default(0)) }}</h3>
+        </div>
+    </div>
+
+</div>
+
+<!-- Admin Quick Actions -->
+<div class="dashboard-grid">
+
+    <div class="dashboard-card">
+        <div class="card-header">
+            <div>
+                <h2>Incident Management</h2>
+                <p>Review and manage cybersecurity incident reports.</p>
+            </div>
+            <i class="bi bi-shield-exclamation"></i>
+        </div>
+
+        <div class="quick-actions">
+            <a href="{{ url_for('admin.incidents') }}" class="quick-action">
+                <i class="bi bi-list-check"></i>
+                <span>View All Incidents</span>
+            </a>
+
+            <a href="{{ url_for('incidents.my_incidents') }}" class="quick-action">
+                <i class="bi bi-clipboard-data"></i>
+                <span>Incident Records</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="dashboard-card">
+        <div class="card-header">
+            <div>
+                <h2>Platform Navigation</h2>
+                <p>Access the main CyberGuard features.</p>
+            </div>
+            <i class="bi bi-grid"></i>
+        </div>
+
+        <div class="quick-actions">
+            <a href="{{ url_for('dashboard.dashboard') }}" class="quick-action">
+                <i class="bi bi-house"></i>
+                <span>User Dashboard</span>
+            </a>
+
+            <a href="{{ url_for('profile.profile') }}" class="quick-action">
+                <i class="bi bi-person"></i>
+                <span>My Profile</span>
+            </a>
+
+            <a href="{{ url_for('assessments.assessment_list') }}" class="quick-action">
+                <i class="bi bi-clipboard-check"></i>
+                <span>Assessments</span>
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<!-- Recent Incidents -->
+<div class="dashboard-card activity-card">
+
+    <div class="card-header">
+        <div>
+            <h2>Recent Incident Reports</h2>
+            <p>Latest cybersecurity incidents submitted to CyberGuard.</p>
+        </div>
+
+        <a href="{{ url_for('admin.incidents') }}" class="text-button">
+            View All <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+
+    {% if recent_incidents %}
+
+    <div class="incident-table-wrapper">
+        <table class="incident-table">
+
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Incident</th>
+                    <th>Severity</th>
+                    <th>Status</th>
+                    <th>Reported</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for incident in recent_incidents %}
+                <tr>
+                    <td>{{ incident['id'] }}</td>
+
+                    <td>
+                        <strong>{{ incident['title'] }}</strong>
+                    </td>
+
+                    <td>
+                        <span class="incident-severity {{ incident['severity']|default('low', true)|lower }}">
+                            {{ incident['severity']|default('Low', true) }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="incident-status {{ incident['status']|default('open', true)|lower|replace(' ', '-') }}">
+                            {{ incident['status']|default('Open', true) }}
+                        </span>
+                    </td>
+
+                    <td>{{ incident['created_at']|default('—', true) }}</td>
+
+                    <td>
+                        <a
+                            href="{{ url_for('incidents.incident_detail', incident_id=incident['id']) }}"
+                            class="incident-secondary-button"
+                        >
+                            View Details
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+    {% else %}
+
+    <div class="incident-empty-card">
+        <div class="incident-empty-icon">
+            <i class="bi bi-shield-check"></i>
+        </div>
+
+        <h3>No Incidents Yet</h3>
+
+        <p>
+            No cybersecurity incidents have been reported on the platform.
+        </p>
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

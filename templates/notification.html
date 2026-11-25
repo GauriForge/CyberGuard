@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications - CyberGuard{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+    <div>
+        <p class="page-label">ACCOUNT / NOTIFICATIONS</p>
+        <h1>Notifications</h1>
+        <p class="page-subtitle">
+            Stay updated with your learning activity, assessments, and security alerts.
+        </p>
+    </div>
+
+    {% if notifications %}
+    <form method="POST" action="{{ url_for('notifications.mark_all_read') }}">
+        <button type="submit" class="btn btn-outline-primary">
+            <i class="bi bi-check2-all me-1"></i> Mark All as Read
+        </button>
+    </form>
+    {% endif %}
+</div>
+
+{% set notification_list = notifications|default([], true) %}
+{% set total_count = notification_list|length %}
+{% set unread_count = notification_list|selectattr('is_read', 'equalto', 0)|list|length %}
+{% set read_count = total_count - unread_count %}
+
+<div class="overview-info-grid">
+    <div class="overview-info-card">
+        <i class="bi bi-bell"></i>
+        <div>
+            <span>Total Notifications</span>
+            <strong>{{ total_count }}</strong>
+        </div>
+    </div>
+
+    <div class="overview-info-card">
+        <i class="bi bi-envelope"></i>
+        <div>
+            <span>Unread</span>
+            <strong>{{ unread_count }}</strong>
+        </div>
+    </div>
+
+    <div class="overview-info-card">
+        <i class="bi bi-check2-all"></i>
+        <div>
+            <span>Read</span>
+            <strong>{{ read_count }}</strong>
+        </div>
+    </div>
+</div>
+
+<div class="overview-section-header">
+    <p class="page-label">RECENT ACTIVITY</p>
+    <h2>Your Notifications</h2>
+    <p>
+        Important updates and activity related to your CyberGuard account
+        will appear here.
+    </p>
+</div>
+
+{% if notification_list %}
+
+<div class="notification-list">
+    {% for notification in notification_list %}
+    <article class="notification-item {% if not notification['is_read'] %}notification-unread{% endif %}">
+
+        <div class="notification-empty-icon">
+            <i class="bi bi-{% if notification['type'] == 'security' %}shield-exclamation{% elif notification['type'] == 'assessment' %}clipboard-check{% elif notification['type'] == 'learning' %}book{% else %}bell{% endif %}"></i>
+        </div>
+
+        <div class="notification-content">
+            <div class="notification-heading">
+                <h3>{{ notification['title'] }}</h3>
+
+                {% if not notification['is_read'] %}
+                <span class="badge bg-primary">Unread</span>
+                {% else %}
+                <span class="badge bg-light text-secondary">Read</span>
+                {% endif %}
+            </div>
+
+            <p>{{ notification['message'] }}</p>
+
+            {% if notification['created_at'] %}
+            <small class="text-muted">
+                <i class="bi bi-clock me-1"></i>
+                {{ notification['created_at'] }}
+            </small>
+            {% endif %}
+
+            <div class="notification-actions">
+                {% if not notification['is_read'] %}
+                <form
+                    method="POST"
+                    action="{{ url_for('notifications.mark_read', notification_id=notification['id']) }}"
+                >
+                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                        Mark as Read
+                    </button>
+                </form>
+                {% endif %}
+
+                <form
+                    method="POST"
+                    action="{{ url_for('notifications.remove_notification', notification_id=notification['id']) }}"
+                    onsubmit="return confirm('Delete this notification?');"
+                >
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-trash me-1"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </article>
+    {% endfor %}
+</div>
+
+{% else %}
+
+<div class="notification-empty-card">
+    <div class="notification-empty-icon">
+        <i class="bi bi-bell-slash"></i>
+    </div>
+
+    <h3>No Notifications Yet</h3>
+
+    <p>
+        You're all caught up. New learning updates, assessment results,
+        and security notifications will appear here.
+    </p>
+</div>
+
+{% endif %}
+
+<div class="notification-preferences">
+    <div class="overview-section-header">
+        <p class="page-label">PREFERENCES</p>
+        <h2>Notification Preferences</h2>
+        <p>Choose the types of updates you would like to receive.</p>
+    </div>
+
+    <div class="notification-settings">
+
+        <div class="notification-setting">
+            <div class="notification-setting-icon">
+                <i class="bi bi-book"></i>
+            </div>
+
+            <div class="notification-setting-content">
+                <h3>Learning Updates</h3>
+                <p>Receive updates about lessons and learning progress.</p>
+            </div>
+
+            <label class="notification-toggle">
+                <input
+                    type="checkbox"
+                    class="notification-preference-toggle"
+                    data-title="Learning Updates"
+                    checked
+                    aria-label="Learning updates"
+                >
+                <span></span>
+            </label>
+        </div>
+
+        <div class="notification-setting">
+            <div class="notification-setting-icon">
+                <i class="bi bi-clipboard-check"></i>
+            </div>
+
+            <div class="notification-setting-content">
+                <h3>Assessment Updates</h3>
+                <p>Receive notifications about assessment results and progress.</p>
+            </div>
+
+            <label class="notification-toggle">
+                <input
+                    type="checkbox"
+                    class="notification-preference-toggle"
+                    data-title="Assessment Updates"
+                    checked
+                    aria-label="Assessment updates"
+                >
+                <span></span>
+            </label>
+        </div>
+
+        <div class="notification-setting">
+            <div class="notification-setting-icon">
+                <i class="bi bi-shield-exclamation"></i>
+            </div>
+
+            <div class="notification-setting-content">
+                <h3>Security Alerts</h3>
+                <p>Receive important cybersecurity and incident-related alerts.</p>
+            </div>
+
+            <label class="notification-toggle">
+                <input
+                    type="checkbox"
+                    class="notification-preference-toggle"
+                    data-title="Security Alerts"
+                    checked
+                    aria-label="Security alerts"
+                >
+                <span></span>
+            </label>
+        </div>
+
+        <div class="notification-setting">
+            <div class="notification-setting-icon">
+                <i class="bi bi-megaphone"></i>
+            </div>
+
+            <div class="notification-setting-content">
+                <h3>Platform Updates</h3>
+                <p>Receive updates about new CyberGuard features and resources.</p>
+            </div>
+
+            <label class="notification-toggle">
+                <input
+                    type="checkbox"
+                    class="notification-preference-toggle"
+                    data-title="Platform Updates"
+                    aria-label="Platform updates"
+                >
+                <span></span>
+            </label>
+        </div>
+
+    </div>
+
+    <p
+        id="preference-status"
+        class="text-muted small mt-3"
+        role="status"
+        aria-live="polite"
+    >
+        Notification preferences are temporary and will reset after refreshing the page.
+    </p>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const toggles = document.querySelectorAll(
+        ".notification-preference-toggle"
+    );
+    const status = document.getElementById("preference-status");
+
+    toggles.forEach(function (toggle) {
+        toggle.addEventListener("change", function () {
+            const title = this.dataset.title;
+            const state = this.checked ? "enabled" : "disabled";
+
+            if (status) {
+                status.textContent =
+                    title + " " + state +
+                    ". This change will reset after refreshing the page.";
+            }
+        });
+    });
+});
+</script>
+
+{% endblock %}

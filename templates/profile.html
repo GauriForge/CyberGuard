@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - CyberGuard{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+    <div>
+        <p class="page-label">ACCOUNT / PROFILE</p>
+        <h1>My Profile</h1>
+        <p class="page-subtitle">
+            Manage your CyberGuard account information and learning preferences.
+        </p>
+    </div>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div
+                class="alert alert-{{ category if category in ['success', 'danger', 'warning', 'info'] else 'info' }}"
+                role="alert"
+            >
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<!-- Profile Overview -->
+<div class="profile-overview-card">
+    <div class="profile-avatar">
+        {{ (user['username']|default('U', true))[:1]|upper }}
+    </div>
+
+    <div class="profile-overview-content">
+        <h2>{{ user['username']|default('CyberGuard User', true) }}</h2>
+
+        <p>
+            <i class="bi bi-envelope"></i>
+            {{ user['email']|default('Email not available', true) }}
+        </p>
+
+        <span class="profile-badge">
+            <i class="bi bi-shield-check"></i>
+            {{ user['role']|default('learner', true)|replace('_', ' ')|title }}
+        </span>
+    </div>
+</div>
+
+<!-- Personal Information -->
+<div class="profile-section">
+    <div class="overview-section-header">
+        <p class="page-label">ACCOUNT INFORMATION</p>
+        <h2>Personal Information</h2>
+        <p>
+            View and manage the information associated with your CyberGuard account.
+        </p>
+    </div>
+
+    <div class="profile-form-card">
+        <form method="POST" action="{{ url_for('profile.profile') }}">
+            <input type="hidden" name="action" value="update_profile">
+
+            <div class="profile-form-grid">
+                <div class="profile-field">
+                    <label for="username">Username</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        value="{{ user['username']|default('', true) }}"
+                        minlength="3"
+                        maxlength="50"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+
+                <div class="profile-field">
+                    <label for="emailAddress">Email Address</label>
+                    <input
+                        type="email"
+                        id="emailAddress"
+                        name="email"
+                        value="{{ user['email']|default('', true) }}"
+                        maxlength="254"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+                <div class="profile-field">
+                    <label for="accountRole">Role</label>
+                    <input
+                        type="text"
+                        id="accountRole"
+                        value="{{ user['role']|default('learner', true)|replace('_', ' ')|title }}"
+                        readonly
+                    >
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <button type="submit" class="profile-save-btn">
+                    <i class="bi bi-check2"></i>
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Learning Statistics -->
+<div class="profile-section">
+    <div class="overview-section-header">
+        <p class="page-label">LEARNING ACTIVITY</p>
+        <h2>My Learning Statistics</h2>
+        <p>Track your progress across the CyberGuard platform.</p>
+    </div>
+
+    <div class="profile-stats-grid">
+        <div class="profile-stat-card">
+            <i class="bi bi-book"></i>
+            <div>
+                <span>Topics Completed</span>
+                <strong>{{ topics_completed|default(0) }}</strong>
+            </div>
+        </div>
+
+        <div class="profile-stat-card">
+            <i class="bi bi-beaker"></i>
+            <div>
+                <span>Labs Completed</span>
+                <strong>{{ labs_completed|default(0) }}</strong>
+            </div>
+        </div>
+
+        <div class="profile-stat-card">
+            <i class="bi bi-clipboard-check"></i>
+            <div>
+                <span>Assessments</span>
+                <strong>{{ assessments_completed|default(0) }}</strong>
+            </div>
+        </div>
+
+        <div class="profile-stat-card">
+            <i class="bi bi-graph-up"></i>
+            <div>
+                <span>Overall Progress</span>
+                <strong>{{ overall_progress|default(0) }}%</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password -->
+<div class="profile-section">
+    <div class="overview-section-header">
+        <p class="page-label">ACCOUNT SECURITY</p>
+        <h2>Change Password</h2>
+        <p>Use your current password to set a new password.</p>
+    </div>
+
+    <div class="profile-form-card">
+        <form method="POST" action="{{ url_for('profile.profile') }}">
+            <input type="hidden" name="action" value="change_password">
+
+            <div class="profile-form-grid">
+                <div class="profile-field">
+                    <label for="current_password">Current Password</label>
+                    <input
+                        type="password"
+                        id="current_password"
+                        name="current_password"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
+
+                <div class="profile-field">
+                    <label for="new_password">New Password</label>
+                    <input
+                        type="password"
+                        id="new_password"
+                        name="new_password"
+                        minlength="8"
+                        autocomplete="new-password"
+                        required
+                    >
+                </div>
+
+                <div class="profile-field">
+                    <label for="confirm_password">Confirm New Password</label>
+                    <input
+                        type="password"
+                        id="confirm_password"
+                        name="confirm_password"
+                        minlength="8"
+                        autocomplete="new-password"
+                        required
+                    >
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <button type="submit" class="profile-save-btn">
+                    <i class="bi bi-shield-lock"></i>
+                    Update Password
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

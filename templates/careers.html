@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}Explore Cybersecurity Careers - CyberGuard{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+    <div>
+        <p class="page-label">CAREER GUIDANCE / EXPLORE</p>
+        <h1>Explore Cybersecurity Careers</h1>
+        <p class="page-subtitle">
+            Discover cybersecurity roles, understand the skills they require,
+            and explore how to prepare for a career that interests you.
+        </p>
+    </div>
+</div>
+
+<div class="overview-info-grid">
+    <div class="overview-info-card">
+        <i class="bi bi-briefcase"></i>
+        <div>
+            <span>Career Roles</span>
+            <strong>{{ careers|length }}</strong>
+        </div>
+    </div>
+
+    <div class="overview-info-card">
+        <i class="bi bi-diagram-3"></i>
+        <div>
+            <span>Career Categories</span>
+            <strong>{{ categories|length }}</strong>
+        </div>
+    </div>
+
+    <div class="overview-info-card">
+        <i class="bi bi-signpost-split"></i>
+        <div>
+            <span>Career Planning</span>
+            <strong>Skill-Based</strong>
+        </div>
+    </div>
+</div>
+
+<div class="overview-section-header">
+    <p class="page-label">FIND YOUR DIRECTION</p>
+    <h2>Cybersecurity Career Paths</h2>
+    <p>
+        Explore each role to understand its responsibilities, essential skills,
+        and suggested learning direction.
+    </p>
+</div>
+
+<div class="career-filter-panel">
+    <div class="career-search-field">
+        <label for="careerSearch">Search career roles</label>
+        <input
+            type="search"
+            id="careerSearch"
+            class="form-control"
+            placeholder="Search by role, skill, or category..."
+        >
+    </div>
+
+    <div class="career-category-field">
+        <label for="careerCategory">Filter by category</label>
+        <select id="careerCategory" class="form-select">
+            <option value="">All Categories</option>
+            {% for category in categories %}
+            <option value="{{ category|lower }}">{{ category }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+<div class="career-grid" id="careerGrid">
+
+    {% for career in careers %}
+    <article
+        class="career-card"
+        data-career-card
+        data-title="{{ career.title|lower }}"
+        data-category="{{ career.category|lower }}"
+        data-level="{{ career.level|lower }}"
+        data-search="{{ (career.description ~ ' ' ~ career.skills|join(' ') ~ ' ' ~ career.learning_path)|lower }}"
+    >
+        <div class="career-card-top">
+            <div class="career-icon">
+                {% if career.category == "Blue Team" or career.category == "Defensive Security" %}
+                    <i class="bi bi-shield-check"></i>
+                {% elif career.category == "Red Team" %}
+                    <i class="bi bi-bug"></i>
+                {% elif career.category == "Digital Forensics" %}
+                    <i class="bi bi-search"></i>
+                {% elif career.category == "Application Security" %}
+                    <i class="bi bi-code-slash"></i>
+                {% elif career.category == "Cloud Security" %}
+                    <i class="bi bi-cloud-lock"></i>
+                {% elif career.category == "Threat Intelligence" %}
+                    <i class="bi bi-eye"></i>
+                {% elif career.category == "Malware Analysis" %}
+                    <i class="bi bi-file-earmark-binary"></i>
+                {% elif career.category == "Security Architecture" %}
+                    <i class="bi bi-diagram-3"></i>
+                {% elif career.category == "Governance, Risk and Compliance" %}
+                    <i class="bi bi-journal-check"></i>
+                {% elif career.category == "Purple Team" %}
+                    <i class="bi bi-arrow-left-right"></i>
+                {% else %}
+                    <i class="bi bi-shield-lock"></i>
+                {% endif %}
+            </div>
+
+            <span class="career-level">{{ career.level }}</span>
+        </div>
+
+        <p class="page-label career-category">
+            {{ career.category }}
+        </p>
+
+        <h3>{{ career.title }}</h3>
+
+        <p class="career-description">
+            {{ career.description }}
+        </p>
+
+        <div class="career-card-section">
+            <h4>
+                <i class="bi bi-tools"></i>
+                Key Skills
+            </h4>
+
+            <div class="career-skill-list">
+                {% for skill in career.skills %}
+                <span class="career-skill">{{ skill }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <details class="career-details">
+            <summary>
+                Explore Learning Path
+                <i class="bi bi-chevron-down"></i>
+            </summary>
+
+            <div class="career-learning-path">
+                <p>{{ career.learning_path }}</p>
+            </div>
+        </details>
+    </article>
+    {% endfor %}
+
+</div>
+
+<div id="careerNoResults" class="empty-state" hidden>
+    <i class="bi bi-search"></i>
+    <h3>No matching careers found</h3>
+    <p>Try another search term or select a different category.</p>
+</div>
+
+<div class="overview-section-header">
+    <p class="page-label">CAREER ADVICE</p>
+    <h2>How to Choose Your Path</h2>
+</div>
+
+<div class="overview-info-grid">
+    <div class="overview-info-card">
+        <i class="bi bi-book"></i>
+        <div>
+            <strong>Build Your Foundation</strong>
+            <span>
+                Learn computer fundamentals, networking, Linux, and
+                cybersecurity basics before specialising.
+            </span>
+        </div>
+    </div>
+
+    <div class="overview-info-card">
+        <i class="bi bi-lightning-charge"></i>
+        <div>
+            <strong>Practise Your Skills</strong>
+            <span>
+                Use guided labs, safe simulations, and small projects to
+                discover which tasks interest you.
+            </span>
+        </div>
+    </div>
+
+    <div class="overview-info-card">
+        <i class="bi bi-folder2-open"></i>
+        <div>
+            <strong>Build a Portfolio</strong>
+            <span>
+                Document your projects, methods, findings, and defensive
+                recommendations to demonstrate your skills.
+            </span>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("careerSearch");
+    const categorySelect = document.getElementById("careerCategory");
+    const careerCards = document.querySelectorAll("[data-career-card]");
+    const noResults = document.getElementById("careerNoResults");
+
+    function filterCareers() {
+        const query = searchInput.value.trim().toLowerCase();
+        const selectedCategory = categorySelect.value.toLowerCase();
+        let visibleCount = 0;
+
+        careerCards.forEach(function (card) {
+            const title = card.dataset.title || "";
+            const category = card.dataset.category || "";
+            const level = card.dataset.level || "";
+            const searchText = card.dataset.search || "";
+
+            const matchesSearch =
+                title.includes(query) ||
+                category.includes(query) ||
+                level.includes(query) ||
+                searchText.includes(query);
+
+            const matchesCategory =
+                !selectedCategory || category === selectedCategory;
+
+            const isVisible = matchesSearch && matchesCategory;
+
+            card.hidden = !isVisible;
+
+            if (isVisible) {
+                visibleCount++;
+            }
+        });
+
+        noResults.hidden = visibleCount !== 0;
+    }
+
+    searchInput.addEventListener("input", filterCareers);
+    categorySelect.addEventListener("change", filterCareers);
+});
+</script>
+
+{% endblock %}

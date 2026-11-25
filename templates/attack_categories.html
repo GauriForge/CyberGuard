@@ -1,0 +1,66 @@
+```html
+{% extends "base.html" %}
+
+{% block title %}Attack Categories - CyberGuard{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+    <div>
+        <p class="page-label">CYBERSECURITY LEARNING</p>
+        <h1>Attack Categories</h1>
+        <p class="page-subtitle">
+            Explore cybersecurity attack types, understand how they work,
+            recognize warning signs, and learn prevention strategies.
+        </p>
+    </div>
+</div>
+
+<div class="category-intro">
+    <div class="category-intro-icon">
+        <i class="bi bi-shield-lock"></i>
+    </div>
+    <div>
+        <h2>Explore Cybersecurity Attacks</h2>
+        <p>
+            Choose a category to explore its subcategories, individual attacks,
+            learning material, real-world examples, and prevention strategies.
+        </p>
+    </div>
+</div>
+
+<div class="category-grid">
+
+    {% for category in categories %}
+    <a href="{{ url_for('attacks.attack_overview', category_id=category.id) }}"
+       class="category-card">
+
+        <div class="category-card-icon">
+            <i class="bi bi-shield-check"></i>
+        </div>
+
+        <div class="category-card-content">
+            <h3>{{ category.name }}</h3>
+
+            <p>{{ category.description }}</p>
+
+            <div class="category-card-footer">
+                <span class="category-arrow">
+                    <i class="bi bi-arrow-right"></i>
+                </span>
+            </div>
+        </div>
+
+    </a>
+    {% else %}
+    <div class="empty-state">
+        <i class="bi bi-shield-exclamation"></i>
+        <h3>No Attack Categories Available</h3>
+        <p>Please check the attack data configuration and try again.</p>
+    </div>
+    {% endfor %}
+
+</div>
+
+{% endblock %}
+```

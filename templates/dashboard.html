@@ -1,0 +1,308 @@
+```html
+{% extends "base.html" %}
+
+{% block title %}Dashboard - CyberGuard{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+    <div>
+        <p class="welcome-label">
+            WELCOME BACK, {{ session.get('username', 'USER')|upper }}
+        </p>
+        <h1>Cybersecurity Learning Dashboard</h1>
+        <p class="dashboard-subtitle">
+            Continue learning, practice safely, and improve your cybersecurity skills.
+        </p>
+    </div>
+
+    <a href="{{ url_for('attacks.attack_categories') }}" class="primary-button">
+        <i class="bi bi-play-fill"></i>
+        Start Learning
+    </a>
+</div>
+
+<!-- Statistics -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon blue">
+            <i class="bi bi-book"></i>
+        </div>
+        <div>
+            <span>Attack Categories</span>
+            <h3>{{ total_categories|default(14) }}</h3>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon green">
+            <i class="bi bi-check-circle"></i>
+        </div>
+        <div>
+            <span>Average Quiz Score</span>
+            <h3>
+                {% if assessment_summary is defined and assessment_summary %}
+                    {{ assessment_summary['average_percentage']|default(0)|round|int }}%
+                {% else %}
+                    —
+                {% endif %}
+            </h3>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon purple">
+            <i class="bi bi-shield-exclamation"></i>
+        </div>
+        <div>
+            <span>Incidents Reported</span>
+            <h3>{{ total_incidents|default(0) }}</h3>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon orange">
+            <i class="bi bi-bell"></i>
+        </div>
+        <div>
+            <span>Open Incidents</span>
+            <h3>{{ open_incidents|default(0) }}</h3>
+        </div>
+    </div>
+</div>
+
+<!-- Main Dashboard Sections -->
+<div class="dashboard-grid">
+    <div class="dashboard-card">
+        <div class="card-header">
+            <div>
+                <h2>Start Learning</h2>
+                <p>Build your cybersecurity knowledge step by step.</p>
+            </div>
+            <i class="bi bi-arrow-up-right"></i>
+        </div>
+
+        <div class="learning-item">
+            <div class="learning-icon">
+                <i class="bi bi-book"></i>
+            </div>
+
+            <div class="learning-info">
+                <h4>Explore Cybersecurity Attacks</h4>
+                <p>Learn attack methods, warning signs, and prevention techniques.</p>
+
+                <div class="progress">
+                    <div class="progress-bar" style="width: 0%;"></div>
+                </div>
+
+                <small>Explore the categories to get started</small>
+            </div>
+
+            <a href="{{ url_for('attacks.attack_categories') }}" class="small-button">
+                Explore
+            </a>
+        </div>
+    </div>
+
+    <div class="dashboard-card">
+        <div class="card-header">
+            <div>
+                <h2>Quick Actions</h2>
+                <p>Access the main platform features.</p>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <a href="{{ url_for('attacks.attack_categories') }}" class="quick-action">
+                <i class="bi bi-grid"></i>
+                <span>Explore Attacks</span>
+            </a>
+
+            <a href="{{ url_for('labs.practical_labs') }}" class="quick-action">
+                <i class="bi bi-beaker"></i>
+                <span>Practical Labs</span>
+            </a>
+
+            <a href="{{ url_for('assessments.assessment_list') }}" class="quick-action">
+                <i class="bi bi-clipboard-check"></i>
+                <span>Take an Assessment</span>
+            </a>
+
+            <a href="{{ url_for('incidents.report_incident') }}" class="quick-action">
+                <i class="bi bi-shield-exclamation"></i>
+                <span>Report an Incident</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Attack Categories -->
+<div class="dashboard-card categories-card">
+    <div class="card-header">
+        <div>
+            <h2>Attack Categories</h2>
+            <p>Explore different areas of cybersecurity.</p>
+        </div>
+
+        <a href="{{ url_for('attacks.attack_categories') }}" class="text-button">
+            View All <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+
+    <div class="category-grid">
+        <a href="{{ url_for('attacks.attack_overview', category_id='social-engineering') }}"
+           class="category-card">
+            <div class="category-icon">
+                <i class="bi bi-people"></i>
+            </div>
+            <h4>Social Engineering</h4>
+            <p>Understand manipulation and deception techniques.</p>
+        </a>
+
+        <a href="{{ url_for('attacks.attack_overview', category_id='password-credential') }}"
+           class="category-card">
+            <div class="category-icon">
+                <i class="bi bi-key"></i>
+            </div>
+            <h4>Password and Credential Attacks</h4>
+            <p>Learn about credential theft and password threats.</p>
+        </a>
+
+        <a href="{{ url_for('attacks.attack_overview', category_id='malware') }}"
+           class="category-card">
+            <div class="category-icon">
+                <i class="bi bi-bug"></i>
+            </div>
+            <h4>Malware</h4>
+            <p>Explore malicious software and its impact.</p>
+        </a>
+
+        <a href="{{ url_for('attacks.attack_overview', category_id='network') }}"
+           class="category-card">
+            <div class="category-icon">
+                <i class="bi bi-diagram-3"></i>
+            </div>
+            <h4>Network Attacks</h4>
+            <p>Understand threats targeting network communication.</p>
+        </a>
+
+        <a href="{{ url_for('attacks.attack_overview', category_id='web-application') }}"
+           class="category-card">
+            <div class="category-icon">
+                <i class="bi bi-globe"></i>
+            </div>
+            <h4>Web Application Attacks</h4>
+            <p>Explore vulnerabilities in websites and applications.</p>
+        </a>
+
+        <a href="{{ url_for('attacks.attack_overview', category_id='mobile-iot') }}"
+           class="category-card">
+            <div class="category-icon">
+                <i class="bi bi-phone"></i>
+            </div>
+            <h4>Mobile and IoT Attacks</h4>
+            <p>Learn about threats to connected devices.</p>
+        </a>
+    </div>
+</div>
+
+<!-- Explore More -->
+<div class="dashboard-card">
+    <div class="card-header">
+        <div>
+            <h2>Explore More</h2>
+            <p>Build your knowledge beyond attack categories.</p>
+        </div>
+    </div>
+
+    <div class="quick-actions">
+        <a href="{{ url_for('roadmap.roadmap') }}" class="quick-action">
+            <i class="bi bi-signpost-split"></i>
+            <span>Cybersecurity Career Roadmap</span>
+        </a>
+
+        <a href="{{ url_for('careers.explore_careers') }}" class="quick-action">
+            <i class="bi bi-briefcase"></i>
+            <span>Explore Cybersecurity Careers</span>
+        </a>
+
+        <a href="{{ url_for('resources.learning_resources') }}" class="quick-action">
+            <i class="bi bi-journal-bookmark"></i>
+            <span>Learning Resources</span>
+        </a>
+
+        <a href="{{ url_for('help_centre.help_centre') }}" class="quick-action">
+            <i class="bi bi-life-preserver"></i>
+            <span>Cyber Help Centre</span>
+        </a>
+
+        <a href="{{ url_for('incidents.my_incidents') }}" class="quick-action">
+            <i class="bi bi-clipboard-data"></i>
+            <span>Manage My Incidents</span>
+        </a>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="dashboard-card activity-card">
+    <div class="card-header">
+        <div>
+            <h2>Recent Activity</h2>
+            <p>Your latest assessment and incident activity.</p>
+        </div>
+    </div>
+
+    <div class="activity-list">
+        {% if recent_results %}
+            {% for result in recent_results %}
+                <div class="activity-item">
+                    <div class="activity-icon learning">
+                        <i class="bi bi-clipboard-check"></i>
+                    </div>
+                    <div>
+                        <h4>{{ result['assessment_name'] }}</h4>
+                        <p>
+                            Score: {{ result['score'] }}/{{ result['total_questions'] }}
+                            · {{ result['percentage']|round|int }}%
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if recent_incidents %}
+            {% for incident in recent_incidents %}
+                <div class="activity-item">
+                    <div class="activity-icon learning">
+                        <i class="bi bi-shield-exclamation"></i>
+                    </div>
+                    <div>
+                        <h4>{{ incident['title'] }}</h4>
+                        <p>
+                            Incident status: {{ incident['status'] }}
+                            · {{ incident['created_at'] }}
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if not recent_results and not recent_incidents %}
+            <div class="activity-item">
+                <div class="activity-icon learning">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <div>
+                    <h4>No recent activity</h4>
+                    <p>
+                        Complete an assessment or report an incident
+                        to see activity here.
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+```

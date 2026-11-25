@@ -1,0 +1,277 @@
+
+{% extends "base.html" %}
+
+{% block title %}Incident Management - CyberGuard{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+    <div>
+        <p class="page-label">INCIDENT MANAGEMENT</p>
+        <h1>{% if incident is defined and incident %}Incident Details{% else %}Incident Management{% endif %}</h1>
+        <p class="page-subtitle">
+            Track, review, and manage reported cybersecurity incidents.
+        </p>
+    </div>
+</div>
+
+{% set incident_list = incidents|default([], true) %}
+{% set total_count = total_incidents|default(incident_list|length) %}
+{% set resolved_count = resolved_incidents|default(incident_list|selectattr('status', 'equalto', 'Resolved')|list|length) %}
+{% set investigation_count = under_investigation|default(incident_list|selectattr('status', 'equalto', 'Under Investigation')|list|length) %}
+
+{% if incident is not defined or not incident %}
+<div class="overview-info-grid">
+    <div class="overview-info-card">
+        <i class="bi bi-folder2-open"></i>
+        <div>
+            <span>Total Incidents</span>
+            <strong>{{ total_count }}</strong>
+        </div>
+    </div>
+
+    <div class="overview-info-card">
+        <i class="bi bi-hourglass-split"></i>
+        <div>
+            <span>Under Investigation</span>
+            <strong>{{ investigation_count }}</strong>
+        </div>
+    </div>
+
+    <div class="overview-info-card">
+        <i class="bi bi-check-circle"></i>
+        <div>
+            <span>Resolved</span>
+            <strong>{{ resolved_count }}</strong>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="incident-management-actions">
+    <a href="{{ url_for('incidents.report_incident') }}" class="incident-primary-button">
+        <i class="bi bi-plus-circle"></i>
+        Report New Incident
+    </a>
+
+    {% if incident is defined and incident %}
+    <a href="{{ url_for('incidents.my_incidents') }}" class="incident-secondary-button">
+        <i class="bi bi-arrow-left"></i>
+        Back to Incidents
+    </a>
+    {% endif %}
+</div>
+
+<div class="incident-list-section">
+    <div class="overview-section-header">
+        <p class="page-label">{% if incident is defined and incident %}INCIDENT RECORD{% else %}INCIDENTS{% endif %}</p>
+        <h2>{% if incident is defined and incident %}{{ incident['title']|default('Incident Details', true) }}{% else %}Reported Incidents{% endif %}</h2>
+        <p>
+            Review incident details, severity, and current response status.
+        </p>
+    </div>
+
+    {% if incident is defined and incident %}
+        <div class="incident-info-card">
+            <div class="incident-info-icon">
+                <i class="bi bi-shield-exclamation"></i>
+            </div>
+            <div>
+                <h3>{{ incident['title']|default('Untitled Incident', true) }}</h3>
+                <p>{{ incident['description']|default('No description provided.', true) }}</p>
+            </div>
+        </div>
+
+        <div class="incident-table-wrapper">
+            <table class="incident-table">
+                <tbody>
+                    <tr>
+                        <th>Incident ID</th>
+                        <td>{{ incident['id'] }}</td>
+                    </tr>
+                    <tr>
+                        <th>Reported By</th>
+                        <td>{{ incident['username']|default('Unknown', true) }}</td>
+                    </tr>
+                    <tr>
+                        <th>Category</th>
+                        <td>{{ incident['category']|default('Other', true) }}</td>
+                    </tr>
+                    <tr>
+                        <th>Severity</th>
+                        <td>
+                            <span class="incident-severity {{ incident['severity']|default('low', true)|lower }}">
+                                {{ incident['severity']|default('Low', true) }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Status</th>
+                        <td>
+                            <span class="incident-status {{ incident['status']|default('open', true)|lower|replace(' ', '-') }}">
+                                {{ incident['status']|default('Open', true) }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Date Reported</th>
+                        <td>{{ incident['created_at']|default('—', true) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        {% if is_admin %}
+        <div class="incident-form-card">
+            <div class="overview-section-header">
+                <p class="page-label">ADMINISTRATION</p>
+                <h2>Update Incident</h2>
+                <p>Change the status and severity of this incident.</p>
+            </div>
+
+            <form
+                class="incident-form"
+                method="POST"
+                action="{{ url_for('incidents.update_incident', incident_id=incident['id']) }}"
+            >
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="status">Incident Status</label>
+                        <select id="status" name="status" required>
+                            {% for status_option in statuses %}
+                            <option value="{{ status_option }}"
+                                {% if incident['status']|default('Open', true) == status_option %}selected{% endif %}>
+                                {{ status_option }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="severity">Severity</label>
+                        <select id="severity" name="severity" required>
+                            {% for severity_option in severities %}
+                            <option value="{{ severity_option }}"
+                                {% if incident['severity']|default('Medium', true) == severity_option %}selected{% endif %}>
+                                {{ severity_option }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="incident-form-actions">
+                    <button type="submit" class="incident-primary-button">
+                        <i class="bi bi-save"></i>
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+
+    {% elif incident_list %}
+        <div class="incident-table-wrapper">
+            <table class="incident-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Incident</th>
+                        <th>Category</th>
+                        <th>Severity</th>
+                        <th>Status</th>
+                        <th>Reported</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in incident_list %}
+                    <tr>
+                        <td>{{ item['id'] }}</td>
+                        <td>
+                            <strong>{{ item['title']|default('Untitled Incident', true) }}</strong>
+                        </td>
+                        <td>{{ item['category']|default('Other', true) }}</td>
+                        <td>
+                            <span class="incident-severity {{ item['severity']|default('low', true)|lower }}">
+                                {{ item['severity']|default('Low', true) }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="incident-status {{ item['status']|default('open', true)|lower|replace(' ', '-') }}">
+                                {{ item['status']|default('Open', true) }}
+                            </span>
+                        </td>
+                        <td>{{ item['created_at']|default('—', true) }}</td>
+                        <td>
+                            <a
+                                href="{{ url_for('incidents.incident_detail', incident_id=item['id']) }}"
+                                class="incident-secondary-button"
+                            >
+                                View Details
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="incident-empty-card">
+            <div class="incident-empty-icon">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <h3>No Incidents Reported</h3>
+            <p>
+                There are currently no security incidents available to display.
+                Submit a report to begin tracking and managing an incident.
+            </p>
+            <a href="{{ url_for('incidents.report_incident') }}" class="incident-primary-button">
+                <i class="bi bi-plus-circle"></i>
+                Report an Incident
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+{% if incident is not defined or not incident %}
+<div class="incident-workflow">
+    <div class="overview-section-header">
+        <p class="page-label">WORKFLOW</p>
+        <h2>Incident Management Process</h2>
+        <p>CyberGuard follows a structured process for handling reported incidents.</p>
+    </div>
+
+    <div class="workflow-grid">
+        <div class="workflow-step">
+            <div class="workflow-number">01</div>
+            <i class="bi bi-file-earmark-plus"></i>
+            <h3>Report</h3>
+            <p>Record the details of a suspected security incident.</p>
+        </div>
+
+        <div class="workflow-step">
+            <div class="workflow-number">02</div>
+            <i class="bi bi-search"></i>
+            <h3>Investigate</h3>
+            <p>Review the incident and analyze the available information.</p>
+        </div>
+
+        <div class="workflow-step">
+            <div class="workflow-number">03</div>
+            <i class="bi bi-shield-exclamation"></i>
+            <h3>Respond</h3>
+            <p>Record appropriate response and containment actions.</p>
+        </div>
+
+        <div class="workflow-step">
+            <div class="workflow-number">04</div>
+            <i class="bi bi-check2-circle"></i>
+            <h3>Resolve</h3>
+            <p>Close the incident after the required actions are completed.</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

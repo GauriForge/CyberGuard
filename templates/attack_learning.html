@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+
+{% block title %}{{ attack.name }} - CyberGuard{% endblock %}
+
+{% block content %}
+
+<div class="learning-page">
+
+    <div class="learning-header">
+        <div>
+            <div class="breadcrumb-text">
+                <a href="{{ url_for('attacks.attack_categories') }}">Learning</a>
+                <i class="bi bi-chevron-right"></i>
+
+                <a href="{{ url_for('attacks.attack_overview', category_id=category.id) }}">
+                    {{ category.name }}
+                </a>
+
+                {% if subcategory %}
+                    <i class="bi bi-chevron-right"></i>
+                    <a href="{{ url_for(
+                        'attacks.attack_subcategory',
+                        category_id=category.id,
+                        subcategory_id=subcategory.id
+                    ) }}">
+                        {{ subcategory.name }}
+                    </a>
+                {% endif %}
+            </div>
+
+            <h1>{{ attack.name }}</h1>
+            <p>
+                Learn about this attack, its methods, warning signs,
+                impact, and prevention techniques.
+            </p>
+        </div>
+
+        <span class="difficulty beginner">
+            {{ attack.get('difficulty', 'Beginner') }}
+        </span>
+    </div>
+
+    <div class="learning-progress-card">
+        <div>
+            <span>Learning Module</span>
+            <strong>
+                {% if subcategory %}
+                    {{ subcategory.name }}
+                {% else %}
+                    {{ category.name }}
+                {% endif %}
+            </strong>
+        </div>
+
+        <div class="progress learning-progress">
+            <div class="progress-bar" style="width: 100%;"></div>
+        </div>
+
+        <small>
+            Review the content, complete the practical activity,
+            and test your knowledge.
+        </small>
+    </div>
+
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon blue">
+                <i class="bi bi-info-circle"></i>
+            </div>
+            <div>
+                <h2>Overview</h2>
+                <p>Understand the attack and its purpose.</p>
+            </div>
+        </div>
+
+        {% if attack.get('summary') %}
+            <p>{{ attack.summary }}</p>
+        {% endif %}
+
+        {% set overview = attack.get('description')
+            or attack.get('overview')
+            or attack.get('introduction')
+            or attack.get('details') %}
+
+        {% if overview %}
+            <p>{{ overview }}</p>
+        {% elif not attack.get('summary') %}
+            <p>
+                Detailed information for this attack will be available
+                in its learning material.
+            </p>
+        {% endif %}
+    </div>
+
+    {% set explanation = attack.get('how_it_works')
+        or attack.get('attack_process')
+        or attack.get('working')
+        or attack.get('steps') %}
+
+    {% if explanation %}
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon purple">
+                <i class="bi bi-diagram-3"></i>
+            </div>
+            <div>
+                <h2>How It Works</h2>
+                <p>Understand the attack process.</p>
+            </div>
+        </div>
+
+        {% if explanation is string %}
+            <p>{{ explanation }}</p>
+        {% elif explanation is mapping %}
+            {% for key, value in explanation.items() %}
+                <p>
+                    <strong>{{ key|replace('_', ' ')|title }}:</strong>
+                    {% if value is mapping %}
+                        {{ value.get('description') or value.get('title') or value }}
+                    {% elif value is sequence and value is not string %}
+                        {{ value|join(', ') }}
+                    {% else %}
+                        {{ value }}
+                    {% endif %}
+                </p>
+            {% endfor %}
+        {% else %}
+            <ol>
+                {% for step in explanation %}
+                    <li>
+                        {% if step is mapping %}
+                            {% if step.get('title') %}
+                                <strong>{{ step.title }}</strong>
+                            {% endif %}
+                            {{ step.get('description')
+                                or step.get('content')
+                                or step.get('step')
+                                or '' }}
+                        {% else %}
+                            {{ step }}
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ol>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% set warning_signs = attack.get('warning_signs')
+        or attack.get('indicators')
+        or attack.get('signs') %}
+
+    {% if warning_signs %}
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon orange">
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+            <div>
+                <h2>Warning Signs</h2>
+                <p>Indicators that may require investigation.</p>
+            </div>
+        </div>
+
+        {% if warning_signs is string %}
+            <p>{{ warning_signs }}</p>
+        {% else %}
+            <ul class="protection-list">
+                {% for item in warning_signs %}
+                    <li>
+                        <i class="bi bi-check-circle"></i>
+                        {% if item is mapping %}
+                            {{ item.get('description') or item.get('name') or item }}
+                        {% else %}
+                            {{ item }}
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% set impact = attack.get('impact') or attack.get('consequences') %}
+
+    {% if impact %}
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon red">
+                <i class="bi bi-shield-exclamation"></i>
+            </div>
+            <div>
+                <h2>Potential Impact</h2>
+                <p>Understand the consequences of the attack.</p>
+            </div>
+        </div>
+
+        {% if impact is string %}
+            <p>{{ impact }}</p>
+        {% else %}
+            <ul class="protection-list">
+                {% for item in impact %}
+                    <li>
+                        <i class="bi bi-exclamation-circle"></i>
+                        {% if item is mapping %}
+                            {{ item.get('description') or item.get('name') or item }}
+                        {% else %}
+                            {{ item }}
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% set prevention = attack.get('prevention')
+        or attack.get('mitigation')
+        or attack.get('protection') %}
+
+    {% if prevention %}
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon green">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <div>
+                <h2>Prevention &amp; Protection</h2>
+                <p>Recommended defensive measures.</p>
+            </div>
+        </div>
+
+        {% if prevention is string %}
+            <p>{{ prevention }}</p>
+        {% else %}
+            <ul class="protection-list">
+                {% for item in prevention %}
+                    <li>
+                        <i class="bi bi-check-circle"></i>
+                        {% if item is mapping %}
+                            {{ item.get('description') or item.get('name') or item }}
+                        {% else %}
+                            {{ item }}
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% set example = attack.get('real_world_example')
+        or attack.get('example')
+        or attack.get('scenario') %}
+
+    {% if example %}
+    <div class="learning-content-card">
+        <div class="learning-section-heading">
+            <div class="section-icon blue">
+                <i class="bi bi-journal-text"></i>
+            </div>
+            <div>
+                <h2>Example or Scenario</h2>
+                <p>Connect the concept to a practical situation.</p>
+            </div>
+        </div>
+
+        {% if example is string %}
+            <p>{{ example }}</p>
+        {% else %}
+            <p>
+                {{ example.get('description')
+                    or example.get('scenario')
+                    or example.get('title')
+                    or example }}
+            </p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="learning-content-card practical-card">
+        <div class="learning-section-heading">
+            <div class="section-icon purple">
+                <i class="bi bi-beaker"></i>
+            </div>
+            <div>
+                <h2>Practical Activity</h2>
+                <p>Reinforce your understanding in a safe environment.</p>
+            </div>
+        </div>
+
+        <p>
+            Practise identifying attack indicators and applying defensive
+            measures using the available guided labs.
+        </p>
+
+        <a href="{{ url_for('labs.practical_labs') }}" class="primary-button">
+            Explore Practical Labs <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+
+    <div class="learning-content-card assessment-card">
+        <div class="learning-section-heading">
+            <div class="section-icon blue">
+                <i class="bi bi-clipboard-check"></i>
+            </div>
+            <div>
+                <h2>Assessment</h2>
+                <p>Check your understanding of this topic.</p>
+            </div>
+        </div>
+
+        <div class="assessment-content">
+            <div>
+                <h3>Ready to test your knowledge?</h3>
+                <p>Attempt an assessment to evaluate what you have learned.</p>
+            </div>
+
+            <a href="{{ url_for('assessments.assessment_list') }}" class="primary-button">
+                Take Assessment <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="overview-back">
+        {% if subcategory %}
+            <a href="{{ url_for(
+                'attacks.attack_subcategory',
+                category_id=category.id,
+                subcategory_id=subcategory.id
+            ) }}">
+                <i class="bi bi-arrow-left"></i>
+                Back to {{ subcategory.name }}
+            </a>
+        {% else %}
+            <a href="{{ url_for('attacks.attack_overview', category_id=category.id) }}">
+                <i class="bi bi-arrow-left"></i>
+                Back to {{ category.name }}
+            </a>
+        {% endif %}
+    </div>
+
+</div>
+
+{% endblock %}
